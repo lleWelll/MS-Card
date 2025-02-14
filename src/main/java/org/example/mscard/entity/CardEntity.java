@@ -2,6 +2,7 @@ package org.example.mscard.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import lombok.experimental.Accessors;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -42,7 +43,8 @@ public class CardEntity {
     private Cvv cvv;
 
     @Column(columnDefinition = "TINYINT(1)", nullable = false)
-    private boolean isActive;
+    private boolean active;
+
 
     @Column(nullable = false)
     private LocalDate expiryDate;

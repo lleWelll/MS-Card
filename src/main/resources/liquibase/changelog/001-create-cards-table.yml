@@ -52,7 +52,7 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: is_active
+                  name: active
                   type: BOOLEAN
                   constraints:
                     nullable: false

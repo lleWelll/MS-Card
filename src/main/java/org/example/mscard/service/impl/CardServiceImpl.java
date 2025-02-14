@@ -95,9 +95,7 @@ public class CardServiceImpl implements CardService {
         if (cardDTO.getExpiryDate() != null) {
             cardEntity.setExpiryDate(cardDTO.getExpiryDate());
         }
-        if (cardDTO.isActive() != cardEntity.isActive()) {
-            cardEntity.setActive(cardDTO.isActive());
-        }
+
 
         CardEntity updatedCard = cardRepository.save(cardEntity);
         return cardMapper.toDTO(updatedCard);

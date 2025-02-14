@@ -1,4 +1,4 @@
-package org.example.mscard.entity;
-
-public class CardNumberTest {
-}
+//package org.example.mscard.entity;
+//
+//public class CardNumberTest {
+//}

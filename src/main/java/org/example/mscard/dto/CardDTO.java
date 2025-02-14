@@ -1,7 +1,10 @@
 package org.example.mscard.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
+import lombok.experimental.Accessors;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -28,7 +31,8 @@ public class CardDTO {
     @NotNull(message = "Expiry date is required")
     private LocalDate expiryDate;
 
-    private boolean isActive;
+    private boolean active;
+
 
     @NotBlank
     private String cardType;

@@ -2,6 +2,7 @@ package org.example.mscard.controller;
 
 import lombok.RequiredArgsConstructor;
 import org.example.mscard.dto.CardDTO;
+import org.example.mscard.entity.CardEntity;
 import org.example.mscard.service.impl.CardServiceImpl;
 import org.springframework.web.bind.annotation.*;
 
@@ -24,7 +25,7 @@ public class CardController {
     }
 
     @PostMapping
-    public CardDTO createCard(@RequestBody CardDTO cardDTO) {
+    public CardEntity createCard(@RequestBody CardDTO cardDTO) {
         return cardServiceImpl.saveCard(cardDTO);
     }
 

@@ -71,12 +71,6 @@ public class CardServiceImpl implements CardService {
                     return new CardNotFoundException("Card with id " + id + " not found");
                 });
 
-        if (cardDTO.getCardHolderFirstName() != null) {
-            cardEntity.setCardHolderFirstName(cardDTO.getCardHolderFirstName());
-        }
-        if (cardDTO.getCardHolderLastName() != null) {
-            cardEntity.setCardHolderLastName(cardDTO.getCardHolderLastName());
-        }
         if (cardDTO.getBalance() != null) {
             cardEntity.setBalance(cardDTO.getBalance());
         }

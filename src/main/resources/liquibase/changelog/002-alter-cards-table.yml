@@ -1,0 +1,26 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-alter-cards-table
+      author: Roman
+      changes:
+        - addColumn:
+            tableName: cards
+            columns:
+              - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+                    unique: true
+        - dropColumn:
+            tableName: cards
+            columnName: card_holder_first_name
+        - dropColumn:
+            tableName: cards
+            columnName: card_holder_last_name

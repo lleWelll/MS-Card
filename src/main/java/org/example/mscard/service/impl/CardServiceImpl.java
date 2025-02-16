@@ -8,6 +8,7 @@ import org.example.mscard.exceptions.CardNotFoundException;
 import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
 import org.example.mscard.service.CardService;
+import org.example.mscard.service.EncryptionService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,10 +20,16 @@ import java.util.List;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
+    private final EncryptionService encryptionService;
 
     @Transactional(readOnly = true)
     public List<CardDTO> getAllCards() {
-        return cardMapper.toDtoList(cardRepository.findAll());
+        List<CardDTO> cardDTOs = cardMapper.toDtoList(cardRepository.findAll());
+        cardDTOs.forEach(card -> {
+            card.setCardNumber(encryptionService.decrypt(card.getCardNumber()));
+            card.setCvvNumber(encryptionService.decrypt(card.getCvvNumber()));
+        });
+        return cardDTOs;
     }
 
     @Override
@@ -32,7 +39,9 @@ public class CardServiceImpl implements CardService {
             throw new IllegalArgumentException("Card number cannot be null or empty");
         }
 
-        return cardMapper.toDto(cardRepository.findByCardNumber(cardNumber).orElseThrow(() -> {
+        String encryptedCardNumber = encryptionService.encrypt(cardNumber);
+
+        return cardMapper.toDto(cardRepository.findByCardNumber(encryptedCardNumber).orElseThrow(() -> {
             log.error("Card with number {} not found", cardNumber);
             return new CardNotFoundException("Card with number " + cardNumber + " not found");
         }));
@@ -45,6 +54,9 @@ public class CardServiceImpl implements CardService {
             log.error("Invalid card details");
             throw new IllegalArgumentException("Invalid card number or CVV");
         }
+
+        cardDTO.setCardNumber(encryptionService.encrypt(cardDTO.getCardNumber()));
+        cardDTO.setCvvNumber(encryptionService.encrypt(cardDTO.getCvvNumber()));
 
         return cardRepository.save(cardMapper.toDao(cardDTO));
     }
@@ -78,8 +90,13 @@ public class CardServiceImpl implements CardService {
             cardEntity.setExpiryDate(cardDTO.getExpiryDate());
         }
 
-
         CardEntity updatedCard = cardRepository.save(cardEntity);
-        return cardMapper.toDto(updatedCard);
+        CardDTO updatedCardDTO = cardMapper.toDto(updatedCard);
+
+        updatedCardDTO.setCardNumber(encryptionService.decrypt(updatedCardDTO.getCardNumber()));
+        updatedCardDTO.setCvvNumber(encryptionService.decrypt(updatedCardDTO.getCvvNumber()));
+
+        return updatedCardDTO;
     }
 }
+

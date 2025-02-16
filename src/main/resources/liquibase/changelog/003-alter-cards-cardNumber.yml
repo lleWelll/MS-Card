@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-alter-card-number
+      author: Roman
+      changes:
+        - modifyDataType:
+            tableName: cards
+            columnName: card_number
+            newDataType: VARCHAR(255)

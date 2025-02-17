@@ -9,6 +9,7 @@ import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
 import org.example.mscard.service.CardService;
 import org.example.mscard.service.EncryptionService;
+import org.example.mscard.util.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,8 +51,7 @@ public class CardServiceImpl implements CardService {
 
     @Transactional
     public CardEntity saveCard(CardDTO cardDTO) {
-        if (!(cardDTO.getCardNumber() != null && cardDTO.getCardNumber().matches("\\d{16}")) ||
-                !(cardDTO.getCvvNumber() != null && cardDTO.getCvvNumber().matches("\\d{3}"))) {
+        if (!(Validator.isValidCardNumber(cardDTO.getCardNumber())) || !(Validator.isValidCVV(cardDTO.getCvvNumber()))) {
             log.error("Invalid card details");
             throw new IllegalArgumentException("Invalid card number or CVV");
         }

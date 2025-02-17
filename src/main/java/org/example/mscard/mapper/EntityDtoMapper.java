@@ -2,7 +2,7 @@ package org.example.mscard.mapper;
 
 import java.util.List;
 
-public interface MapperHelper<S, D> {
+public interface EntityDtoMapper<S, D> {
 
     S toDto(D d);
 

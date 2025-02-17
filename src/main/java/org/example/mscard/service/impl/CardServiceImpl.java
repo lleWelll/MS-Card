@@ -32,6 +32,7 @@ public class CardServiceImpl implements CardService {
         return cardDTOs;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CardDTO getCardByNumber(String cardNumber) {
         if (cardNumber == null || cardNumber.isBlank()) {
@@ -99,4 +100,3 @@ public class CardServiceImpl implements CardService {
         return updatedCardDTO;
     }
 }
-

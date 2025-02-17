@@ -28,6 +28,7 @@ public class CardServiceImpl implements CardService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CardDTO getCardByNumber(String cardNumber) {
         if (cardNumber == null || cardNumber.isBlank()) {

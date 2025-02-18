@@ -2,8 +2,6 @@ package org.example.mscard.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -16,22 +14,16 @@ import java.time.LocalDateTime;
 @Builder
 @Getter
 @Setter
-public class CardEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class CardEntity extends BaseEntity{
 
     @Column(nullable = false, unique = true)
-    private Long accountId;
+    private Long accountId; //1-1
 
     @Column(nullable = false, unique = true)
-    private Long userId;
+    private Long userId; //1-1
 
     @Column(nullable = false)
     private String cardNumber;
-
-    @Column(nullable = false)
-    private String cvvNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -49,13 +41,5 @@ public class CardEntity {
 
     @Column(precision = 19, scale = 2, nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
-
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime created;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime lastUpdated;
 
 }

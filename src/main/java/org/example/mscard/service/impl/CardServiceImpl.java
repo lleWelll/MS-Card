@@ -28,7 +28,6 @@ public class CardServiceImpl implements CardService {
         List<CardDTO> cardDTOs = cardMapper.toDtoList(cardRepository.findAll());
         cardDTOs.forEach(card -> {
             card.setCardNumber(encryptionService.decrypt(card.getCardNumber()));
-            card.setCvvNumber(encryptionService.decrypt(card.getCvvNumber()));
         });
         return cardDTOs;
     }
@@ -36,7 +35,7 @@ public class CardServiceImpl implements CardService {
     @Transactional(readOnly = true)
     @Override
     public CardDTO getCardByNumber(String cardNumber) {
-        if (cardNumber == null || cardNumber.isBlank()) {
+        if (Validator.isCardNumberNullOrBlank(cardNumber)) {
             log.error("Attempted to find card with null or empty number");
             throw new IllegalArgumentException("Card number cannot be null or empty");
         }
@@ -51,13 +50,12 @@ public class CardServiceImpl implements CardService {
 
     @Transactional
     public CardEntity saveCard(CardDTO cardDTO) {
-        if (!(Validator.isValidCardNumber(cardDTO.getCardNumber())) || !(Validator.isValidCVV(cardDTO.getCvvNumber()))) {
+        if (!(Validator.isValidCardNumber(cardDTO.getCardNumber()))) {
             log.error("Invalid card details");
             throw new IllegalArgumentException("Invalid card number or CVV");
         }
 
         cardDTO.setCardNumber(encryptionService.encrypt(cardDTO.getCardNumber()));
-        cardDTO.setCvvNumber(encryptionService.encrypt(cardDTO.getCvvNumber()));
 
         return cardRepository.save(cardMapper.toDao(cardDTO));
     }
@@ -95,7 +93,6 @@ public class CardServiceImpl implements CardService {
         CardDTO updatedCardDTO = cardMapper.toDto(updatedCard);
 
         updatedCardDTO.setCardNumber(encryptionService.decrypt(updatedCardDTO.getCardNumber()));
-        updatedCardDTO.setCvvNumber(encryptionService.decrypt(updatedCardDTO.getCvvNumber()));
 
         return updatedCardDTO;
     }

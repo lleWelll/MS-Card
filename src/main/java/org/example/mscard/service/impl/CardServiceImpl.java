@@ -1,15 +1,16 @@
 package org.example.mscard.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.mscard.dto.CardDTO;
-import org.example.mscard.entity.*;
+import org.example.mscard.entity.CardEntity;
 import org.example.mscard.exceptions.CardNotFoundException;
 import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
 import org.example.mscard.service.CardService;
+import org.example.mscard.util.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
 
@@ -28,37 +29,31 @@ public class CardServiceImpl implements CardService {
                 .toList();
     }
 
+    @Transactional(readOnly = true)
     @Override
     public CardDTO getCardByNumber(String cardNumber) {
-        if (cardNumber == null || cardNumber.isBlank()) {
+        if (Validator.isCardNumberNullOrBlank(cardNumber)) {
             log.error("Attempted to find card with null or empty number");
             throw new IllegalArgumentException("Card number cannot be null or empty");
         }
-        return cardRepository.findByCardNumber_CardNumber(cardNumber)
-                .map(cardMapper::toDTO)
-                .orElseThrow(() -> {
-                    log.error("Card with number {} not found", cardNumber);
-                    return new CardNotFoundException("Card with number " + cardNumber + " not found");
-                });
+
+        return cardMapper.toDTO(cardRepository.findByCardNumber(cardNumber).orElseThrow(() -> {
+            log.error("Card with number {} not found", cardNumber);
+            return new CardNotFoundException("Card with number " + cardNumber + " not found");
+        }));
     }
 
-    @Transactional
+    @Override
     public CardDTO saveCard(CardDTO cardDTO) {
+        log.info("Received request: {}", cardDTO);
 
-        CardNumber cardNumber = new CardNumber(cardDTO.getCardNumber());
-        Cvv cvv = new Cvv(cardDTO.getCvv());
-
-        if (!cardNumber.isValid() || !cvv.isValid()) {
-            log.error("Invalid card details");
-            throw new IllegalArgumentException("Invalid card number or CVV");
+        if (!Validator.isValidCardNumber(cardDTO.getCardNumber())) {
+            log.error("Invalid card number: {}", cardDTO.getCardNumber());
+            throw new IllegalArgumentException("Invalid card number");
         }
-
         CardEntity cardEntity = cardMapper.toEntity(cardDTO);
-        cardEntity.setCardNumber(cardNumber);
-        cardEntity.setCvv(cvv);
-
-        CardEntity savedCard = cardRepository.save(cardEntity);
-        return cardMapper.toDTO(savedCard);
+        CardEntity savedCardEntity = cardRepository.save(cardEntity);
+        return cardMapper.toDTO(savedCardEntity);
     }
 
     @Override
@@ -83,15 +78,10 @@ public class CardServiceImpl implements CardService {
                     return new CardNotFoundException("Card with id " + id + " not found");
                 });
 
-        if (cardDTO.getCardHolderFirstName() != null) {
-            cardEntity.setCardHolderFirstName(cardDTO.getCardHolderFirstName());
-        }
-        if (cardDTO.getCardHolderLastName() != null) {
-            cardEntity.setCardHolderLastName(cardDTO.getCardHolderLastName());
-        }
         if (cardDTO.getBalance() != null) {
             cardEntity.setBalance(cardDTO.getBalance());
         }
+
         if (cardDTO.getExpiryDate() != null) {
             cardEntity.setExpiryDate(cardDTO.getExpiryDate());
         }

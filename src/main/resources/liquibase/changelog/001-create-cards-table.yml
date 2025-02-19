@@ -1,7 +1,7 @@
 databaseChangeLog:
   - changeSet:
       id: 001-create-cards-table
-      author: your_name
+      author: Valentina
       changes:
         - createTable:
             tableName: cards
@@ -15,6 +15,18 @@ databaseChangeLog:
                     nullable: false
 
               - column:
+                  name: account_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
+                  name: user_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+
+              - column:
                   name: card_number
                   type: VARCHAR(16)
                   constraints:
@@ -22,26 +34,21 @@ databaseChangeLog:
                     unique: true
 
               - column:
-                   name: cvv_number
-                   type: VARCHAR(4)
-                   constraints:
+                  name: balance
+                  type: DECIMAL(19,2)
+                  constraints:
                     nullable: false
+                    defaultValueNumeric: 0.00
 
               - column:
-                  name: card_holder_first_name
-                  type: VARCHAR(255)
+                  name: expiry_date
+                  type: DATE
                   constraints:
                     nullable: false
 
               - column:
-                  name: card_holder_last_name
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-
-              - column:
-                  name: payment_system
-                  type: VARCHAR(50)
+                  name: active
+                  type: TINYINT(1)
                   constraints:
                     nullable: false
 
@@ -52,23 +59,10 @@ databaseChangeLog:
                     nullable: false
 
               - column:
-                  name: active
-                  type: BOOLEAN
+                  name: payment_system
+                  type: VARCHAR(50)
                   constraints:
                     nullable: false
-
-              - column:
-                  name: expiry_date
-                  type: DATE
-                  constraints:
-                    nullable: false
-
-              - column:
-                  name: balance
-                  type: DECIMAL(19,2)
-                  constraints:
-                    nullable: false
-                    defaultValueNumeric: 0.00
 
               - column:
                   name: created
@@ -78,3 +72,4 @@ databaseChangeLog:
               - column:
                   name: last_updated
                   type: TIMESTAMP
+                  defaultValueComputed: CURRENT_TIMESTAMP

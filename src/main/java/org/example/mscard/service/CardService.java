@@ -1,6 +1,7 @@
 package org.example.mscard.service;
 
 import org.example.mscard.dto.CardDTO;
+import org.example.mscard.entity.CardEntity;
 
 import java.util.List;
 

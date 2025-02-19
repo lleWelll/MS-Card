@@ -17,7 +17,5 @@ spring:
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
     enabled: true
-  jackson:
-    property-naming-strategy: SNAKE_CASE
 server:
   port: 4444

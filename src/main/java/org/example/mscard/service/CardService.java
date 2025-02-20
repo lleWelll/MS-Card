@@ -9,7 +9,7 @@ public interface CardService {
 
     List<CardDTO> getAllCards();
     CardDTO getCardByNumber(String cardNumber);
-    CardEntity saveCard(CardDTO cardDTO);
+    CardDTO saveCard(CardDTO cardDTO);
     boolean deleteCard(Long id);
     CardDTO updateCard(Long id, CardDTO cardDTO);
 }

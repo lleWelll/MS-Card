@@ -2,10 +2,9 @@ package org.example.mscard.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "cards")
@@ -33,8 +32,8 @@ public class CardEntity extends BaseEntity{
     @Column(nullable = false)
     private CardType cardType;
 
-    @Column(columnDefinition = "TINYINT(1)", nullable = false)
-    private boolean active;
+    @Column(columnDefinition = "TINYINT(1)")
+    private Boolean active;
 
     @Column(nullable = false)
     private LocalDate expiryDate;

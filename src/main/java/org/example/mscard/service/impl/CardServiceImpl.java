@@ -8,7 +8,6 @@ import org.example.mscard.exceptions.CardNotFoundException;
 import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
 import org.example.mscard.service.CardService;
-import org.example.mscard.service.EncryptionService;
 import org.example.mscard.util.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,15 +20,13 @@ import java.util.List;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
-    private final EncryptionService encryptionService;
 
     @Transactional(readOnly = true)
     public List<CardDTO> getAllCards() {
-        List<CardDTO> cardDTOs = cardMapper.toDtoList(cardRepository.findAll());
-        cardDTOs.forEach(card -> {
-            card.setCardNumber(encryptionService.decrypt(card.getCardNumber()));
-        });
-        return cardDTOs;
+        return cardRepository.findAll()
+                .stream()
+                .map(cardMapper::toDTO)
+                .toList();
     }
 
     @Transactional(readOnly = true)
@@ -40,24 +37,23 @@ public class CardServiceImpl implements CardService {
             throw new IllegalArgumentException("Card number cannot be null or empty");
         }
 
-        String encryptedCardNumber = encryptionService.encrypt(cardNumber);
-
-        return cardMapper.toDto(cardRepository.findByCardNumber(encryptedCardNumber).orElseThrow(() -> {
+        return cardMapper.toDTO(cardRepository.findByCardNumber(cardNumber).orElseThrow(() -> {
             log.error("Card with number {} not found", cardNumber);
             return new CardNotFoundException("Card with number " + cardNumber + " not found");
         }));
     }
 
-    @Transactional
-    public CardEntity saveCard(CardDTO cardDTO) {
-        if (!(Validator.isValidCardNumber(cardDTO.getCardNumber()))) {
-            log.error("Invalid card details");
-            throw new IllegalArgumentException("Invalid card number or CVV");
+    @Override
+    public CardDTO saveCard(CardDTO cardDTO) {
+        log.info("Received request: {}", cardDTO);
+
+        if (!Validator.isValidCardNumber(cardDTO.getCardNumber())) {
+            log.error("Invalid card number: {}", cardDTO.getCardNumber());
+            throw new IllegalArgumentException("Invalid card number");
         }
-
-        cardDTO.setCardNumber(encryptionService.encrypt(cardDTO.getCardNumber()));
-
-        return cardRepository.save(cardMapper.toDao(cardDTO));
+        CardEntity cardEntity = cardMapper.toEntity(cardDTO);
+        CardEntity savedCardEntity = cardRepository.save(cardEntity);
+        return cardMapper.toDTO(savedCardEntity);
     }
 
     @Override
@@ -85,15 +81,13 @@ public class CardServiceImpl implements CardService {
         if (cardDTO.getBalance() != null) {
             cardEntity.setBalance(cardDTO.getBalance());
         }
+
         if (cardDTO.getExpiryDate() != null) {
             cardEntity.setExpiryDate(cardDTO.getExpiryDate());
         }
 
+
         CardEntity updatedCard = cardRepository.save(cardEntity);
-        CardDTO updatedCardDTO = cardMapper.toDto(updatedCard);
-
-        updatedCardDTO.setCardNumber(encryptionService.decrypt(updatedCardDTO.getCardNumber()));
-
-        return updatedCardDTO;
+        return cardMapper.toDTO(updatedCard);
     }
 }

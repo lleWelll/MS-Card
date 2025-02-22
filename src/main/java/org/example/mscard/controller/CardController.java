@@ -21,9 +21,9 @@ public class CardController {
         return cardServiceImpl.getAllCards();
     }
 
-    @GetMapping("/{cardNumber}")
-    public CardDTO getCardByNumber(@PathVariable String cardNumber) {
-        return cardServiceImpl.getCardByNumber(cardNumber);
+    @GetMapping("/{id}")
+    public CardDTO getCardById(@PathVariable Long id) {
+        return cardServiceImpl.getCardById(id);
     }
 
     @PostMapping

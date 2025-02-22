@@ -8,5 +8,4 @@ import java.util.Optional;
 
 @Repository
 public interface CardRepository extends JpaRepository<CardEntity, Long> {
-    Optional<CardEntity> findByCardNumber(String cardNumber);
 }

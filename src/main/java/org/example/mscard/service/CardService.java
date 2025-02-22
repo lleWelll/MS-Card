@@ -8,7 +8,7 @@ import java.util.List;
 public interface CardService {
 
     List<CardDTO> getAllCards();
-    CardDTO getCardByNumber(String cardNumber);
+    CardDTO getCardById(Long id);
     CardDTO saveCard(CardDTO cardDTO);
     boolean deleteCard(Long id);
     CardDTO updateCard(Long id, CardDTO cardDTO);

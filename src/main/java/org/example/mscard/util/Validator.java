@@ -12,4 +12,9 @@ public class Validator {
         return cardNumber == null || cardNumber.isBlank();
     }
 
+    public static boolean isCardIdValid(Long id) {
+        if (id == null) return false;
+        return id >= 1;
+    }
+
 }

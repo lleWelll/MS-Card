@@ -31,15 +31,15 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     @Override
-    public CardDTO getCardByNumber(String cardNumber) {
-        if (Validator.isCardNumberNullOrBlank(cardNumber)) {
-            log.error("Attempted to find card with null or empty number");
-            throw new IllegalArgumentException("Card number cannot be null or empty");
+    public CardDTO getCardById(Long id) {
+        if (! Validator.isCardIdValid(id)) {
+            log.error("Attempted to find card invalid id");
+            throw new IllegalArgumentException("Card id is null or < 0");
         }
 
-        return cardMapper.toDTO(cardRepository.findByCardNumber(cardNumber).orElseThrow(() -> {
-            log.error("Card with number {} not found", cardNumber);
-            return new CardNotFoundException("Card with number " + cardNumber + " not found");
+        return cardMapper.toDTO(cardRepository.findById(id).orElseThrow(() -> {
+            log.error("Card with id {} not found", id);
+            return new CardNotFoundException("Card with id " + id + " not found");
         }));
     }
 

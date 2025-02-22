@@ -32,4 +32,10 @@ public class CardController {
         return cardServiceImpl.saveCard(cardDTO);
     }
 
+    @PostMapping("/setActive")
+    public CardDTO setActive(@RequestParam Long id, @RequestParam Boolean active) {
+        return cardServiceImpl.updateCard(id,
+                (entity) -> entity.setActive(active)
+                );
+    }
 }

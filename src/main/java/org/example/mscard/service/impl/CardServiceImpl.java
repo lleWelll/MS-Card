@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -32,15 +33,7 @@ public class CardServiceImpl implements CardService {
     @Transactional(readOnly = true)
     @Override
     public CardDTO getCardById(Long id) {
-        if (! Validator.isCardIdValid(id)) {
-            log.error("Attempted to find card invalid id");
-            throw new IllegalArgumentException("Card id is null or < 0");
-        }
-
-        return cardMapper.toDTO(cardRepository.findById(id).orElseThrow(() -> {
-            log.error("Card with id {} not found", id);
-            return new CardNotFoundException("Card with id " + id + " not found");
-        }));
+        return cardMapper.toDTO(getEntityById(id));
     }
 
     @Override
@@ -71,23 +64,21 @@ public class CardServiceImpl implements CardService {
 
     @Transactional
     @Override
-    public CardDTO updateCard(Long id, CardDTO cardDTO) {
-        CardEntity cardEntity = cardRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Card with id {} not found", id);
-                    return new CardNotFoundException("Card with id " + id + " not found");
-                });
+    public CardDTO updateCard(Long id, Consumer<CardEntity> updateFunction) {
+        CardEntity entity = getEntityById(id);
+        updateFunction.accept(entity);
+        cardRepository.save(entity);
+        return cardMapper.toDTO(entity);
+    }
 
-        if (cardDTO.getBalance() != null) {
-            cardEntity.setBalance(cardDTO.getBalance());
+    private CardEntity getEntityById(Long id) {
+        if (! Validator.isCardIdValid(id)) {
+            log.error("Attempted to find card with invalid id: {}", id);
+            throw new IllegalArgumentException("Card id is null or < 0");
         }
-
-        if (cardDTO.getExpiryDate() != null) {
-            cardEntity.setExpiryDate(cardDTO.getExpiryDate());
-        }
-
-
-        CardEntity updatedCard = cardRepository.save(cardEntity);
-        return cardMapper.toDTO(updatedCard);
+        return cardRepository.findById(id).orElseThrow(() -> {
+            log.error("Card with id {} not found", id);
+            return new CardNotFoundException("Card with id " + id + " not found");
+        });
     }
 }

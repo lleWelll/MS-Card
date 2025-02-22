@@ -37,7 +37,7 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public CardDTO saveCard(CardDTO cardDTO) {
+    public CardDTO saveCardById(CardDTO cardDTO) {
         log.info("Received request: {}", cardDTO);
 
         if (!Validator.isValidCardNumber(cardDTO.getCardNumber())) {
@@ -50,21 +50,16 @@ public class CardServiceImpl implements CardService {
     }
 
     @Override
-    public boolean deleteCard(Long id) {
-        return cardRepository.findById(id)
-                .map(card -> {
-                    cardRepository.deleteById(id);
-                    return true;
-                })
-                .orElseThrow(() -> {
-                    log.error("Attempted to delete non-existent card with id {}", id);
-                    return new CardNotFoundException("Card not found with id " + id);
-                });
+    public boolean deleteCardById(Long id) {
+       CardEntity entity = getEntityById(id);
+       cardRepository.delete(entity);
+       log.info("Card {} deleted", id);
+       return true;
     }
 
     @Transactional
     @Override
-    public CardDTO updateCard(Long id, Consumer<CardEntity> updateFunction) {
+    public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
         CardEntity entity = getEntityById(id);
         updateFunction.accept(entity);
         cardRepository.save(entity);

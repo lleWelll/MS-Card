@@ -29,13 +29,18 @@ public class CardController {
     @PostMapping
     public CardDTO createCard(@RequestBody @Valid CardDTO cardDTO) {
         log.info("Received request: {}", cardDTO);
-        return cardServiceImpl.saveCard(cardDTO);
+        return cardServiceImpl.saveCardById(cardDTO);
     }
 
     @PostMapping("/setActive")
     public CardDTO setActive(@RequestParam Long id, @RequestParam Boolean active) {
-        return cardServiceImpl.updateCard(id,
+        return cardServiceImpl.updateCardById(id,
                 (entity) -> entity.setActive(active)
                 );
+    }
+
+    @DeleteMapping("/{id}")
+    public boolean deleteById(@PathVariable Long id) {
+        return cardServiceImpl.deleteCardById(id);
     }
 }

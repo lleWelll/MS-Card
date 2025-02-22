@@ -10,8 +10,8 @@ public interface CardService {
 
     List<CardDTO> getAllCards();
     CardDTO getCardById(Long id);
-    CardDTO saveCard(CardDTO cardDTO);
-    boolean deleteCard(Long id);
-    CardDTO updateCard(Long id, Consumer<CardEntity> updateFunction);
+    CardDTO saveCardById(CardDTO cardDTO);
+    boolean deleteCardById(Long id);
+    CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction);
 }
 

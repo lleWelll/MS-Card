@@ -1,6 +1,5 @@
 package org.example.mscard.dto;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -19,7 +18,6 @@ public class CardDTO {
 
     @NotNull(message = "user id is required")
     private Long userId;
-
 
     @Pattern(regexp = "\\d{16}", message = "Card number must be 16 digits")
     private String cardNumber;

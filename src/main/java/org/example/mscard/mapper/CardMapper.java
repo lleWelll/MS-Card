@@ -2,11 +2,12 @@ package org.example.mscard.mapper;
 
 import org.example.mscard.dto.CardDTO;
 import org.example.mscard.entity.CardEntity;
+import org.example.mscard.entity.PaymentSystem;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring", uses = {CardTypeMapper.class, PaymentSystemMapper.class})
 public interface CardMapper extends EntityDtoMapper<CardDTO, CardEntity> {
 
     @Mapping(source = "cardNumber", target = "cardNumber", qualifiedByName = "mapCardNumber")

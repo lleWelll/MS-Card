@@ -36,6 +36,7 @@ public class CardServiceImpl implements CardService {
         return cardMapper.toDTO(getEntityById(id));
     }
 
+    @Transactional
     @Override
     public CardDTO saveCardById(CardDTO cardDTO) {
         log.info("Received request: {}", cardDTO);
@@ -49,6 +50,7 @@ public class CardServiceImpl implements CardService {
         return cardMapper.toDTO(savedCardEntity);
     }
 
+    @Transactional
     @Override
     public boolean deleteCardById(Long id) {
        CardEntity entity = getEntityById(id);
@@ -60,6 +62,10 @@ public class CardServiceImpl implements CardService {
     @Transactional
     @Override
     public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
+        if (! Validator.isValidCardId(id)) {
+            log.error("Attempted to find card with invalid id: {}", id);
+            throw new IllegalArgumentException("Card id is null or < 0");
+        }
         CardEntity entity = getEntityById(id);
         updateFunction.accept(entity);
         cardRepository.save(entity);
@@ -67,7 +73,7 @@ public class CardServiceImpl implements CardService {
     }
 
     private CardEntity getEntityById(Long id) {
-        if (! Validator.isCardIdValid(id)) {
+        if (! Validator.isValidCardId(id)) {
             log.error("Attempted to find card with invalid id: {}", id);
             throw new IllegalArgumentException("Card id is null or < 0");
         }

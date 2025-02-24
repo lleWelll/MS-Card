@@ -7,12 +7,10 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 
 @Mapper(componentModel = "spring")
-public interface CardMapper {
+public interface CardMapper extends EntityDtoMapper<CardDTO, CardEntity> {
 
     @Mapping(source = "cardNumber", target = "cardNumber", qualifiedByName = "mapCardNumber")
     CardEntity toEntity(CardDTO cardDTO);
-
-    CardDTO toDTO(CardEntity cardEntity);
 
     @Named("mapCardNumber")
     static String mapCardNumber(String cardNumber) {

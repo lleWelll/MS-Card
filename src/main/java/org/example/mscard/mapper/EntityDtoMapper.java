@@ -4,9 +4,8 @@ import java.util.List;
 
 public interface EntityDtoMapper<S, D> {
 
-    S toDto(D d);
+    S toDTO(D d);
 
-    D toDao(S s);
+    D toEntity(S s);
 
-    List<S> toDtoList(List<D> d);
 }

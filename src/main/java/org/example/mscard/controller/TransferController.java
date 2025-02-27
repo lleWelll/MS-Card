@@ -16,30 +16,30 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 public class TransferController {
 
-    private final CardTransactionService transactionService;
+	private final CardTransactionService transactionService;
 
-    @PostMapping("/pay")
-    public void processPayment(@RequestParam Long id, @RequestParam BigDecimal amount) {
-        checkAmount(amount);
-        transactionService.processPayment(id, amount);
-    }
+	@PostMapping("/pay")
+	public void processPayment(@RequestParam Long id, @RequestParam BigDecimal amount) {
+		checkAmount(amount);
+		transactionService.processPayment(id, amount);
+	}
 
-    @PostMapping("/receive")
-    public void processReceiving(@RequestParam Long id, @RequestParam BigDecimal amount) {
-        checkAmount(amount);
-        transactionService.processReceiving(id, amount);
-    }
+	@PostMapping("/receive")
+	public void processReceiving(@RequestParam Long id, @RequestParam BigDecimal amount) {
+		checkAmount(amount);
+		transactionService.processReceiving(id, amount);
+	}
 
-    @PostMapping()
-    public void processTransfer(@RequestParam Long fromId, @RequestParam Long toId, @RequestParam BigDecimal amount) {
-        checkAmount(amount);
-        transactionService.processTransfer(fromId, toId, amount);
-    }
+	@PostMapping()
+	public void processTransfer(@RequestParam Long fromId, @RequestParam Long toId, @RequestParam BigDecimal amount) {
+		checkAmount(amount);
+		transactionService.processTransfer(fromId, toId, amount);
+	}
+	private void checkAmount(BigDecimal amount) {
+		if (! Validator.isValidAmount(amount)) {
+			log.error("amount of money is not valid, it should be != null and > 0");
+			throw new IllegalArgumentException("Invalid amount of money");
+		}
+	}
 
-    private void checkAmount(BigDecimal amount) {
-        if (! Validator.isValidAmount(amount)) {
-            log.error("amount of money is not valid, it should be != null and > 0");
-            throw new IllegalArgumentException("Invalid amount of money");
-        }
-    }
 }

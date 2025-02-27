@@ -13,7 +13,6 @@ import org.example.mscard.service.CardService;
 import org.example.mscard.util.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -23,7 +22,6 @@ import java.util.function.Consumer;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
-
     @Transactional(readOnly = true)
     public List<CardDTO> getAllCards() {
         log.info("Получение всех карт");
@@ -33,9 +31,7 @@ public class CardServiceImpl implements CardService {
                 .toList();
         log.info("Получено {} карт", cards.size());
         return cards;
-
     }
-
     @Transactional(readOnly = true)
     @Override
     public CardDTO getCardById(Long id) {
@@ -44,7 +40,6 @@ public class CardServiceImpl implements CardService {
         log.info("Карта с id {} успешно получена", id);
         return cardDTO;
     }
-
     @Transactional
     @Override
     public CardDTO saveCardById(CardDTO cardDTO) {
@@ -55,21 +50,17 @@ public class CardServiceImpl implements CardService {
         cardDTO.setPaymentSystem(convertToUpperCasePaymentSystem);
         cardDTO.setCardType(convertToUpperCaseCardType);
 
-
         if (!Validator.isValidCardType(cardDTO.getCardType())) {
             log.error("Неверный тип карты: {}", cardDTO.getCardType());
             throw new InvalidCardTypeException("Неверно указан тип карты");
         }
-
         if (!Validator.isValidPaymentSystem(cardDTO.getPaymentSystem())) {
             log.error("Неверная платежная система: {}", cardDTO.getPaymentSystem());
             throw new InvalidPaymentSystemException("Неверно указана платежная система");
         }
-
         CardEntity cardEntity = cardMapper.toEntity(cardDTO);
         CardEntity savedCardEntity = cardRepository.save(cardEntity);
         log.info("Карта успешно сохранена: {}", savedCardEntity.getId());
-
         return cardMapper.toDTO(savedCardEntity);
     }
 
@@ -82,7 +73,6 @@ public class CardServiceImpl implements CardService {
         log.info("Карта с id {} успешно удалена", id);
         return true;
     }
-
     @Transactional
     @Override
     public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
@@ -97,7 +87,6 @@ public class CardServiceImpl implements CardService {
         log.info("Карта с id {} успешно обновлена", id);
         return cardMapper.toDTO(entity);
     }
-
     private CardEntity getEntityById(Long id) {
         log.info("Попытка получить карту с id {}", id);
         if (! Validator.isValidCardId(id)) {

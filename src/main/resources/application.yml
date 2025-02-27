@@ -8,6 +8,10 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
   jackson:
     property-naming-strategy: SNAKE_CASE
+<<<<<<< HEAD
+=======
+
+>>>>>>> pred-release
   jpa:
     hibernate:
       ddl-auto: validate

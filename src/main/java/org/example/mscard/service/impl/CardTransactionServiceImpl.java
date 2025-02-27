@@ -1,4 +1,5 @@
 package org.example.mscard.service.impl;
+
 import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -15,6 +16,7 @@ import java.math.BigDecimal;
 @RequiredArgsConstructor
 @Slf4j
 public class CardTransactionServiceImpl implements CardTransactionService {
+
 
     private final CardService cardService;
 
@@ -46,4 +48,5 @@ public class CardTransactionServiceImpl implements CardTransactionService {
         processPayment(fromId, amount);
         processReceiving(toId, amount);
     }
+
 }

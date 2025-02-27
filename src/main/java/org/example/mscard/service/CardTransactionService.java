@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 
 public interface CardTransactionService {
 
+
     void processPayment(Long id, BigDecimal amount);
 
     void processReceiving(Long id, BigDecimal amount);
@@ -11,3 +12,4 @@ public interface CardTransactionService {
     void processTransfer(Long fromId, Long toId, BigDecimal amount);
 
 }
+

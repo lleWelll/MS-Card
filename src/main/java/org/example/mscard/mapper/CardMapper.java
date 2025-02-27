@@ -5,12 +5,10 @@ import org.example.mscard.entity.CardEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
-
 @Mapper(componentModel = "spring", uses = {CardTypeMapper.class, PaymentSystemMapper.class})
 public interface CardMapper {
     @Mapping(source = "cardNumber", target = "cardNumber", qualifiedByName = "mapCardNumber")
     CardEntity toEntity(CardDTO cardDTO);
-
 
     CardDTO toDTO(CardEntity cardEntity);
     @Named("mapCardNumber")

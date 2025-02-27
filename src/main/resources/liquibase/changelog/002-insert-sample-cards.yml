@@ -11,10 +11,10 @@ databaseChangeLog:
                   value: '1234567812345678'
               - column:
                   name: payment_system
-                  value: 'Visa'
+                  value: 'VISA'
               - column:
                   name: card_type
-                  value: 'Credit'
+                  value: 'CREDIT'
               - column:
                   name: active
                   value: '1'
@@ -39,10 +39,10 @@ databaseChangeLog:
                   value: '8765432187654321'
               - column:
                   name: payment_system
-                  value: 'MasterCard'
+                  value: 'MASTERCARD'
               - column:
                   name: card_type
-                  value: 'Debit'
+                  value: 'DEBIT'
               - column:
                   name: active
                   value: '0'
@@ -67,10 +67,10 @@ databaseChangeLog:
                   value: '2345678923456789'
               - column:
                   name: payment_system
-                  value: 'American Express'
+                  value: 'VISA'
               - column:
                   name: card_type
-                  value: 'Credit'
+                  value: 'CREDIT'
               - column:
                   name: active
                   value: '1'
@@ -95,10 +95,10 @@ databaseChangeLog:
                   value: '3456789034567890'
               - column:
                   name: payment_system
-                  value: 'Discover'
+                  value: 'MASTERCARD'
               - column:
                   name: card_type
-                  value: 'Debit'
+                  value: 'DEBIT'
               - column:
                   name: active
                   value: '1'

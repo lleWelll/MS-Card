@@ -5,6 +5,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.example.mscard.dto.CardDTO;
 import org.example.mscard.entity.CardEntity;
 import org.example.mscard.exceptions.CardNotFoundException;
+import org.example.mscard.exceptions.InvalidCardTypeException;
+import org.example.mscard.exceptions.InvalidPaymentSystemException;
 import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
 import org.example.mscard.service.CardService;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -23,71 +26,87 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     public List<CardDTO> getAllCards() {
-        return cardRepository.findAll()
+        log.info("Получение всех карт");
+        List<CardDTO> cards =  cardRepository.findAll()
                 .stream()
                 .map(cardMapper::toDTO)
                 .toList();
+        log.info("Получено {} карт", cards.size());
+        return cards;
+
     }
 
     @Transactional(readOnly = true)
     @Override
-    public CardDTO getCardByNumber(String cardNumber) {
-        if (Validator.isCardNumberNullOrBlank(cardNumber)) {
-            log.error("Attempted to find card with null or empty number");
-            throw new IllegalArgumentException("Card number cannot be null or empty");
-        }
-
-        return cardMapper.toDTO(cardRepository.findByCardNumber(cardNumber).orElseThrow(() -> {
-            log.error("Card with number {} not found", cardNumber);
-            return new CardNotFoundException("Card with number " + cardNumber + " not found");
-        }));
-    }
-
-    @Override
-    public CardDTO saveCard(CardDTO cardDTO) {
-        log.info("Received request: {}", cardDTO);
-
-        if (!Validator.isValidCardNumber(cardDTO.getCardNumber())) {
-            log.error("Invalid card number: {}", cardDTO.getCardNumber());
-            throw new IllegalArgumentException("Invalid card number");
-        }
-        CardEntity cardEntity = cardMapper.toEntity(cardDTO);
-        CardEntity savedCardEntity = cardRepository.save(cardEntity);
-        return cardMapper.toDTO(savedCardEntity);
-    }
-
-    @Override
-    public boolean deleteCard(Long id) {
-        return cardRepository.findById(id)
-                .map(card -> {
-                    cardRepository.deleteById(id);
-                    return true;
-                })
-                .orElseThrow(() -> {
-                    log.error("Attempted to delete non-existent card with id {}", id);
-                    return new CardNotFoundException("Card not found with id " + id);
-                });
+    public CardDTO getCardById(Long id) {
+        log.info("Получение карты с id {}", id);
+        CardDTO cardDTO = cardMapper.toDTO(getEntityById(id));
+        log.info("Карта с id {} успешно получена", id);
+        return cardDTO;
     }
 
     @Transactional
     @Override
-    public CardDTO updateCard(Long id, CardDTO cardDTO) {
-        CardEntity cardEntity = cardRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Card with id {} not found", id);
-                    return new CardNotFoundException("Card with id " + id + " not found");
-                });
+    public CardDTO saveCardById(CardDTO cardDTO) {
 
-        if (cardDTO.getBalance() != null) {
-            cardEntity.setBalance(cardDTO.getBalance());
+        String convertToUpperCasePaymentSystem = cardDTO.getPaymentSystem().toUpperCase();
+        String convertToUpperCaseCardType = cardDTO.getCardType().toUpperCase();
+
+        cardDTO.setPaymentSystem(convertToUpperCasePaymentSystem);
+        cardDTO.setCardType(convertToUpperCaseCardType);
+
+
+        if (!Validator.isValidCardType(cardDTO.getCardType())) {
+            log.error("Неверный тип карты: {}", cardDTO.getCardType());
+            throw new InvalidCardTypeException("Неверно указан тип карты");
         }
 
-        if (cardDTO.getExpiryDate() != null) {
-            cardEntity.setExpiryDate(cardDTO.getExpiryDate());
+        if (!Validator.isValidPaymentSystem(cardDTO.getPaymentSystem())) {
+            log.error("Неверная платежная система: {}", cardDTO.getPaymentSystem());
+            throw new InvalidPaymentSystemException("Неверно указана платежная система");
         }
 
+        CardEntity cardEntity = cardMapper.toEntity(cardDTO);
+        CardEntity savedCardEntity = cardRepository.save(cardEntity);
+        log.info("Карта успешно сохранена: {}", savedCardEntity.getId());
 
-        CardEntity updatedCard = cardRepository.save(cardEntity);
-        return cardMapper.toDTO(updatedCard);
+        return cardMapper.toDTO(savedCardEntity);
+    }
+
+    @Transactional
+    @Override
+    public boolean deleteCardById(Long id) {
+        log.info("Попытка удалить карту с id {}", id);
+        CardEntity entity = getEntityById(id);
+        cardRepository.delete(entity);
+        log.info("Карта с id {} успешно удалена", id);
+        return true;
+    }
+
+    @Transactional
+    @Override
+    public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
+        log.info("Попытка обновить карту с id {}", id);
+        if (! Validator.isValidCardId(id)) {
+            log.error("Попытка найти карту с неверным id: {}", id);
+            throw new IllegalArgumentException("id карты не может быть равен null или < 0");
+        }
+        CardEntity entity = getEntityById(id);
+        updateFunction.accept(entity);
+        cardRepository.save(entity);
+        log.info("Карта с id {} успешно обновлена", id);
+        return cardMapper.toDTO(entity);
+    }
+
+    private CardEntity getEntityById(Long id) {
+        log.info("Попытка получить карту с id {}", id);
+        if (! Validator.isValidCardId(id)) {
+            log.error("Попытка найти карту с неверным id: {}", id);
+            throw new IllegalArgumentException("id карты не может быть равен null или < 0");
+        }
+        return cardRepository.findById(id).orElseThrow(() -> {
+            log.error("Карта с id {} не найдена", id);
+            return new CardNotFoundException("Карта с id " + id + " не найдена");
+        });
     }
 }

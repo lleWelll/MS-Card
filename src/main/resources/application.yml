@@ -6,6 +6,8 @@ spring:
     password: root
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jackson:
+    property-naming-strategy: SNAKE_CASE
   jpa:
     hibernate:
       ddl-auto: validate

@@ -1,5 +1,8 @@
 package org.example.mscard.dto;
 
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -12,6 +15,10 @@ import java.time.LocalDate;
 @NoArgsConstructor
 @Builder
 public class CardDTO {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @NotNull(message = "account id is required")
     private Long accountId;

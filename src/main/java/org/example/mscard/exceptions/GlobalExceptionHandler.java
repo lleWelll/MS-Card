@@ -7,6 +7,8 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.io.IOException;
+
 
 @RestControllerAdvice
 @Slf4j
@@ -34,7 +36,11 @@ public class GlobalExceptionHandler {
         log.error("Ошибка валидации данных: ", ex);
         return new ErrorDetails(400, "Ошибка валидации данных");
     }
-
+    @ExceptionHandler(IOException.class)
+    public ErrorDetails handleIOException(IOException ex) {
+        log.error("Ошибка при обработке данных: ", ex);
+        return new ErrorDetails(400, "Некорректный формат даты или данных в запросе");
+    }
     @ExceptionHandler(Exception.class)
     public ErrorDetails globalExceptionHandler(Exception ex) {
         log.error("Произошла ошибка: ", ex);

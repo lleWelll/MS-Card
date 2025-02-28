@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 
-import java.math.BigDecimal;
-
 @Slf4j
 public class Validator {
 
@@ -16,7 +14,7 @@ public class Validator {
         return cardNumber == null || cardNumber.isBlank();
     }
 
-    public static boolean isValidCardId(Long id) {
+    public static boolean isValidId(Long id) {
         if (id == null) return false;
         return id >= 1;
     }

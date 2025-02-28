@@ -21,9 +21,19 @@ public class CardController {
         return cardService.getAllCards();
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("id/{id}")
     public CardDTO getCardById(@PathVariable Long id) {
         return cardService.getCardById(id);
+    }
+
+    @GetMapping("/user/{userId}")
+    public CardDTO getCardByUserId(@PathVariable Long userId) {
+        return cardService.getCardByUserId(userId);
+    }
+
+    @GetMapping("/account/{accountId}")
+    public CardDTO getCardByAccountId(@PathVariable Long accountId) {
+        return cardService.getCardByAccountId(accountId);
     }
 
     @PostMapping

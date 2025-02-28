@@ -40,6 +40,25 @@ public class CardServiceImpl implements CardService {
         log.info("Карта с id {} успешно получена", id);
         return cardDTO;
     }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CardDTO getCardByUserId(Long userId) {
+        log.info("Получение карты по userId {}", userId);
+        CardDTO cardDTO = cardMapper.toDTO(getEntityByUserId(userId));
+        log.info("Карта с userId {} успешно получена", userId);
+        return cardDTO;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CardDTO getCardByAccountId(Long accountId) {
+        log.info("Получение карты по accountId {}", accountId);
+        CardDTO cardDTO = cardMapper.toDTO(getEntityByAccountId(accountId));
+        log.info("Карта с accountId {} успешно получена", accountId);
+        return cardDTO;
+    }
+
     @Transactional
     @Override
     public CardDTO saveCardById(CardDTO cardDTO) {
@@ -77,7 +96,7 @@ public class CardServiceImpl implements CardService {
     @Override
     public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
         log.info("Попытка обновить карту с id {}", id);
-        if (! Validator.isValidCardId(id)) {
+        if (! Validator.isValidId(id)) {
             log.error("Попытка найти карту с неверным id: {}", id);
             throw new IllegalArgumentException("id карты не может быть равен null или < 0");
         }
@@ -89,13 +108,37 @@ public class CardServiceImpl implements CardService {
     }
     private CardEntity getEntityById(Long id) {
         log.info("Попытка получить карту с id {}", id);
-        if (! Validator.isValidCardId(id)) {
+        if (! Validator.isValidId(id)) {
             log.error("Попытка найти карту с неверным id: {}", id);
             throw new IllegalArgumentException("id карты не может быть равен null или < 0");
         }
         return cardRepository.findById(id).orElseThrow(() -> {
             log.error("Карта с id {} не найдена", id);
             return new CardNotFoundException("Карта с id " + id + " не найдена");
+        });
+    }
+
+    private CardEntity getEntityByUserId(Long id) {
+        log.info("Попытка получить карту с userId {}", id);
+        if (! Validator.isValidId(id)) {
+            log.error("Попытка найти карту с неверным userId: {}", id);
+            throw new IllegalArgumentException("userId карты не может быть равен null или < 0");
+        }
+        return cardRepository.findCardEntityByUserId(id).orElseThrow(() -> {
+            log.error("Карта с userId {} не найдена", id);
+            return new CardNotFoundException("Карта с userId " + id + " не найдена");
+        });
+    }
+
+    private CardEntity getEntityByAccountId(Long id) {
+        log.info("Попытка получить карту с accountId {}", id);
+        if (! Validator.isValidId(id)) {
+            log.error("Попытка найти карту с неверным accountId: {}", id);
+            throw new IllegalArgumentException("accountId карты не может быть равен null или < 0");
+        }
+        return cardRepository.findCardEntityByAccountId(id).orElseThrow(() -> {
+            log.error("Карта с accountId {} не найдена", id);
+            return new CardNotFoundException("Карта с accountId " + id + " не найдена");
         });
     }
 }

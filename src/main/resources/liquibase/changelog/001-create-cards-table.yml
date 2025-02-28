@@ -31,7 +31,6 @@ databaseChangeLog:
                   type: VARCHAR(16)
                   constraints:
                     nullable: false
-                    unique: true
 
               - column:
                   name: balance

@@ -27,7 +27,7 @@ public class CardDTO {
     private BigDecimal balance;
 
     @NotNull(message = "Expiry date is required")
-    private LocalDate expiryDate;
+    private String expiryDate;
 
     private Boolean active;
 

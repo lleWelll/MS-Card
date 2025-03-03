@@ -4,14 +4,17 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class CardDTO {
+
+    //In CardDto id can be null
+    private Long id;
 
     @NotNull(message = "account id is required")
     private Long accountId;

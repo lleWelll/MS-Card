@@ -14,13 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import static org.mockito.ArgumentMatchers.any;
 
 @ExtendWith(MockitoExtension.class)
 @SpringBootTest
@@ -65,6 +63,18 @@ public class CardMapperTest {
 	}
 
 	@Test
+	public void toEntity_WithSpacesInCardNumber_ReturnsCorrectEntity() {
+		defaultCardDto.setCardNumber("1234 1234 1234 1234");
+		Assertions.assertEquals(defaultCardEntity, cardMapper.toEntity(defaultCardDto));
+	}
+
+	@Test
+	public void toEntity_WithDashInCardNumber_ReturnsCorrectEntity() {
+		defaultCardDto.setCardNumber("1234-1234-1234-1234");
+		Assertions.assertEquals(defaultCardEntity, cardMapper.toEntity(defaultCardDto));
+	}
+
+	@Test
 	public void toDto_WithValidEntity_ThenReturnsCorrectDto() {
 		Assertions.assertEquals(defaultCardDto, cardMapper.toDTO(defaultCardEntity));
 	}
@@ -78,7 +88,7 @@ public class CardMapperTest {
 		return CardDTO.builder()
 				.accountId(1L)
 				.userId(1L)
-				.cardNumber("************1234")
+				.cardNumber("1234123412341234")
 				.balance(new BigDecimal("1000.0"))
 				.expiryDate("2026-12-31")
 				.active(false)

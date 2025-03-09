@@ -76,6 +76,7 @@ public class CardMapperTest {
 
 	@Test
 	public void toDto_WithValidEntity_ThenReturnsCorrectDto() {
+		defaultCardDto.setCardNumber("************1234");
 		Assertions.assertEquals(defaultCardDto, cardMapper.toDTO(defaultCardEntity));
 	}
 

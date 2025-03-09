@@ -36,7 +36,7 @@ public class DateMapperTest {
 		Exception exception = Assertions.assertThrows(IllegalArgumentException.class,
 				() -> dateMapper.toDate(date)
 		);
-		Assertions.assertEquals("date format is not supported, pls enter in this format: dd-MM-yyyy", exception.getMessage());
+		Assertions.assertEquals("date format is not supported, please enter in this format: dd-MM-yyyy", exception.getMessage());
 	}
 
 	@Test

@@ -24,17 +24,21 @@ public class DateMapper {
 		return LocalDate.parse(expiryDate, format);
 	}
 
+
 	private static String findDelimiter(String str) {
-		Pattern delimiterPattern = Pattern.compile("\\D");
-		Matcher matcher = delimiterPattern.matcher(str);
-		if (matcher.find()) {
-			return matcher.group();
-		} else {
-			throw new IllegalArgumentException("date format is not supported, pls enter in this format: dd-MM-yyyy");
+		Matcher matcher = Pattern.compile("\\D").matcher(str);
+		if (!matcher.find()) {
+			throw new IllegalArgumentException("date format is not supported, please enter in this format: dd-MM-yyyy");
 		}
+		String delimiter = matcher.group();
+		if (!str.replaceFirst(Pattern.quote(delimiter), "").matches("[\\d" + Pattern.quote(delimiter) + "]+")) {
+			throw new IllegalArgumentException("date format is not supported, please enter in this format: dd-MM-yyyy");
+		}
+		return delimiter;
 	}
 
-	private static DateTimeFormatter createFormat(String[] dateElements, String delimiter) {
+
+	private DateTimeFormatter createFormat(String[] dateElements, String delimiter) {
 		if (dateElements[0].length() == 4 && Integer.parseInt(dateElements[1]) <= 12) {
 			return DateTimeFormatter.ofPattern("yyyy" + delimiter + "MM" + delimiter + "dd");
 		}

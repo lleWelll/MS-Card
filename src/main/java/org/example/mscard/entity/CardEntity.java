@@ -13,6 +13,7 @@ import java.time.LocalDate;
 @Builder
 @Getter
 @Setter
+@EqualsAndHashCode(callSuper = false)
 public class CardEntity extends BaseEntity{
 
     @Column(nullable = false, unique = true)

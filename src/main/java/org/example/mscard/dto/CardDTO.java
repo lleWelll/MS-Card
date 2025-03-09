@@ -4,14 +4,17 @@ import jakarta.validation.constraints.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@EqualsAndHashCode
 public class CardDTO {
+
+    //In CardDto id can be null
+    private Long id;
 
     @NotNull(message = "account id is required")
     private Long accountId;
@@ -19,6 +22,7 @@ public class CardDTO {
     @NotNull(message = "user id is required")
     private Long userId;
 
+    @NotNull
     @Pattern(regexp = "\\d{16}", message = "Card number must be 16 digits")
     private String cardNumber;
 

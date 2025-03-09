@@ -1,9 +1,7 @@
 package org.example.mscard.service.impl;
 
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.example.mscard.entity.CardEntity;
 import org.example.mscard.service.CardService;
 import org.example.mscard.service.CardTransactionService;
 import org.springframework.stereotype.Service;

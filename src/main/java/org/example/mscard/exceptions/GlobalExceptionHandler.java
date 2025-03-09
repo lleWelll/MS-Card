@@ -2,6 +2,8 @@ package org.example.mscard.exceptions;
 
 import lombok.extern.slf4j.Slf4j;
 import org.example.mscard.dto.ErrorDetails;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,36 +17,45 @@ import java.io.IOException;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(InvalidCardTypeException.class)
-    public ErrorDetails handleInvalidCardTypeException(InvalidCardTypeException ex) {
-        log.error("Ошибка типа карты: ", ex);
-        return new ErrorDetails(400, ex.getMessage());
+    public ResponseEntity<ErrorDetails> handleInvalidCardTypeException(InvalidCardTypeException ex) {
+        log.error("Card type error: ", ex);
+        ErrorDetails errorDetails = new ErrorDetails(400, ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(InvalidPaymentSystemException.class)
-    public ErrorDetails handleInvalidPaymentSystemException(InvalidPaymentSystemException ex) {
-        log.error("Ошибка платежной системы: ", ex);
-        return new ErrorDetails(400, ex.getMessage());
+    public ResponseEntity<ErrorDetails> handleInvalidPaymentSystemException(InvalidPaymentSystemException ex) {
+        log.error("Payment system error: ", ex);
+        ErrorDetails errorDetails = new ErrorDetails(400, ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(HttpMessageNotReadableException.class)
-    public ErrorDetails handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
-        log.error("Ошибка чтения тела запроса: ", ex);
-        return new ErrorDetails(400, "Некорректный формат данных в запросе");
+    public ResponseEntity<ErrorDetails> handleHttpMessageNotReadableException(HttpMessageNotReadableException ex) {
+        log.error("Error reading the request body: ", ex);
+        ErrorDetails errorDetails = new ErrorDetails(400, "Incorrect data format in the request");
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ErrorDetails handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
-        log.error("Ошибка валидации данных: ", ex);
-        return new ErrorDetails(400, "Ошибка валидации данных");
+    public ResponseEntity<ErrorDetails> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex) {
+        log.error("Data validation error: ", ex);
+        ErrorDetails errorDetails = new ErrorDetails(400, "Data validation error");
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(IOException.class)
-    public ErrorDetails handleIOException(IOException ex) {
-        log.error("Ошибка при обработке данных: ", ex);
-        return new ErrorDetails(400, "Некорректный формат даты или данных в запросе");
+    public ResponseEntity<ErrorDetails> handleIOException(IOException ex) {
+        log.error("Error during data processing: ", ex);
+        ErrorDetails errorDetails = new ErrorDetails(400, "Incorrect date or data format in the request");
+        return new ResponseEntity<>(errorDetails, HttpStatus.BAD_REQUEST);
     }
+
     @ExceptionHandler(Exception.class)
-    public ErrorDetails globalExceptionHandler(Exception ex) {
-        log.error("Произошла ошибка: ", ex);
-        return new ErrorDetails(500, "Ошибка сервера: " + ex.getMessage());
+    public ResponseEntity<ErrorDetails> globalExceptionHandler(Exception ex) {
+        log.error("An error has occurred: ", ex);
+        ErrorDetails errorDetails = new ErrorDetails(500, "Server error: " + ex.getMessage());
+        return new ResponseEntity<>(errorDetails, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }
 

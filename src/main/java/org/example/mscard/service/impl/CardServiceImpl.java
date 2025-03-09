@@ -24,38 +24,38 @@ public class CardServiceImpl implements CardService {
     private final CardMapper cardMapper;
     @Transactional(readOnly = true)
     public List<CardDTO> getAllCards() {
-        log.info("Получение всех карт");
+        log.info("Getting all the cards");
         List<CardDTO> cards =  cardRepository.findAll()
                 .stream()
                 .map(cardMapper::toDTO)
                 .toList();
-        log.info("Получено {} карт", cards.size());
+        log.info("Received {} cards", cards.size());
         return cards;
     }
     @Transactional(readOnly = true)
     @Override
     public CardDTO getCardById(Long id) {
-        log.info("Получение карты с id {}", id);
+        log.info("Getting a card with an id {}", id);
         CardDTO cardDTO = cardMapper.toDTO(getEntityById(id));
-        log.info("Карта с id {} успешно получена", id);
+        log.info("Card with id {} successfully received", id);
         return cardDTO;
     }
 
     @Transactional(readOnly = true)
     @Override
     public CardDTO getCardByUserId(Long userId) {
-        log.info("Получение карты по userId {}", userId);
+        log.info("Getting a card by userId {}", userId);
         CardDTO cardDTO = cardMapper.toDTO(getEntityByUserId(userId));
-        log.info("Карта с userId {} успешно получена", userId);
+        log.info("The card with the userId {} was successfully received", userId);
         return cardDTO;
     }
 
     @Transactional(readOnly = true)
     @Override
     public CardDTO getCardByAccountId(Long accountId) {
-        log.info("Получение карты по accountId {}", accountId);
+        log.info("Getting a card by AccountId {}", accountId);
         CardDTO cardDTO = cardMapper.toDTO(getEntityByAccountId(accountId));
-        log.info("Карта с accountId {} успешно получена", accountId);
+        log.info("The card with the AccountId {} was successfully received", accountId);
         return cardDTO;
     }
 
@@ -70,75 +70,75 @@ public class CardServiceImpl implements CardService {
         cardDTO.setCardType(convertToUpperCaseCardType);
 
         if (!Validator.isValidCardType(cardDTO.getCardType())) {
-            log.error("Неверный тип карты: {}", cardDTO.getCardType());
-            throw new InvalidCardTypeException("Неверно указан тип карты");
+            log.error("Invalid card type: {}", cardDTO.getCardType());
+            throw new InvalidCardTypeException("The card type is incorrect.");
         }
         if (!Validator.isValidPaymentSystem(cardDTO.getPaymentSystem())) {
-            log.error("Неверная платежная система: {}", cardDTO.getPaymentSystem());
-            throw new InvalidPaymentSystemException("Неверно указана платежная система");
+            log.error("Incorrect payment system: {}", cardDTO.getPaymentSystem());
+            throw new InvalidPaymentSystemException("The payment system is specified incorrectly.");
         }
         CardEntity cardEntity = cardMapper.toEntity(cardDTO);
         CardEntity savedCardEntity = cardRepository.save(cardEntity);
-        log.info("Карта успешно сохранена: {}", savedCardEntity.getId());
+        log.info("The map was saved successfully: {}", savedCardEntity.getId());
         return cardMapper.toDTO(savedCardEntity);
     }
 
     @Transactional
     @Override
     public boolean deleteCardById(Long id) {
-        log.info("Попытка удалить карту с id {}", id);
+        log.info("Attempt to delete a card with an id {}", id);
         CardEntity entity = getEntityById(id);
         cardRepository.delete(entity);
-        log.info("Карта с id {} успешно удалена", id);
+        log.info("Card with id {} successfully deleted", id);
         return true;
     }
     @Transactional
     @Override
     public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
-        log.info("Попытка обновить карту с id {}", id);
+        log.info("Attempt to update a card with an id {}", id);
         if (! Validator.isValidId(id)) {
-            log.error("Попытка найти карту с неверным id: {}", id);
-            throw new IllegalArgumentException("id карты не может быть равен null или < 0");
+            log.error("Attempt to find a card with an incorrect id: {}", id);
+            throw new IllegalArgumentException("the card id cannot be null or < 0");
         }
         CardEntity entity = getEntityById(id);
         updateFunction.accept(entity);
         cardRepository.save(entity);
-        log.info("Карта с id {} успешно обновлена", id);
+        log.info("The card with the id {} has been successfully updated", id);
         return cardMapper.toDTO(entity);
     }
     private CardEntity getEntityById(Long id) {
-        log.info("Попытка получить карту с id {}", id);
+        log.info("Attempt to get a card with an id {}", id);
         if (! Validator.isValidId(id)) {
-            log.error("Попытка найти карту с неверным id: {}", id);
-            throw new IllegalArgumentException("id карты не может быть равен null или < 0");
+            log.error("Attempt to find a card with an incorrect id: {}", id);
+            throw new IllegalArgumentException("the card id cannot be null or < 0");
         }
         return cardRepository.findById(id).orElseThrow(() -> {
-            log.error("Карта с id {} не найдена", id);
-            return new CardNotFoundException("Карта с id " + id + " не найдена");
+            log.error("Card with id {} not found", id);
+            return new CardNotFoundException("A card with an id " + id + " not found");
         });
     }
 
     private CardEntity getEntityByUserId(Long id) {
-        log.info("Попытка получить карту с userId {}", id);
+        log.info("Attempt to get a card with user Id {}", id);
         if (! Validator.isValidId(id)) {
-            log.error("Попытка найти карту с неверным userId: {}", id);
-            throw new IllegalArgumentException("userId карты не может быть равен null или < 0");
+            log.error("Attempt to find a card with an invalid userId: {}", id);
+            throw new IllegalArgumentException("the user Id of the card cannot be null or < 0");
         }
         return cardRepository.findCardEntityByUserId(id).orElseThrow(() -> {
-            log.error("Карта с userId {} не найдена", id);
-            return new CardNotFoundException("Карта с userId " + id + " не найдена");
+            log.error("Card with user Id {} not found", id);
+            return new CardNotFoundException("A card with a userId " + id + " not found");
         });
     }
 
     private CardEntity getEntityByAccountId(Long id) {
-        log.info("Попытка получить карту с accountId {}", id);
+        log.info("Attempt to get a card with an AccountId {}", id);
         if (! Validator.isValidId(id)) {
-            log.error("Попытка найти карту с неверным accountId: {}", id);
-            throw new IllegalArgumentException("accountId карты не может быть равен null или < 0");
+            log.error("Attempt to find a card with an invalid AccountId: {}", id);
+            throw new IllegalArgumentException("accountId card cannot be equal to null or < 0");
         }
         return cardRepository.findCardEntityByAccountId(id).orElseThrow(() -> {
-            log.error("Карта с accountId {} не найдена", id);
-            return new CardNotFoundException("Карта с accountId " + id + " не найдена");
+            log.error("Card with a accountId {} not found", id);
+            return new CardNotFoundException("card with a accountId " + id + " not found");
         });
     }
 }

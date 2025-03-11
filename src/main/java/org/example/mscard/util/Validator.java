@@ -36,4 +36,9 @@ public class Validator {
         List<String> validPaymentSystems = Arrays.asList("VISA", "MASTERCARD");
         return paymentSystem != null && validPaymentSystems.contains(paymentSystem.toUpperCase());
     }
+
+    public static boolean isValidDateString(String date) {
+        if (date.length() != 10) return false;
+        else return true;
+    }
 }

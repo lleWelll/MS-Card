@@ -13,6 +13,7 @@ import org.example.mscard.service.CardService;
 import org.example.mscard.util.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -22,16 +23,18 @@ import java.util.function.Consumer;
 public class CardServiceImpl implements CardService {
     private final CardRepository cardRepository;
     private final CardMapper cardMapper;
+
     @Transactional(readOnly = true)
     public List<CardDTO> getAllCards() {
         log.info("Getting all the cards");
-        List<CardDTO> cards =  cardRepository.findAll()
+        List<CardDTO> cards = cardRepository.findAll()
                 .stream()
                 .map(cardMapper::toDTO)
                 .toList();
         log.info("Received {} cards", cards.size());
         return cards;
     }
+
     @Transactional(readOnly = true)
     @Override
     public CardDTO getCardById(Long id) {
@@ -79,7 +82,7 @@ public class CardServiceImpl implements CardService {
         }
         CardEntity cardEntity = cardMapper.toEntity(cardDTO);
         CardEntity savedCardEntity = cardRepository.save(cardEntity);
-        log.info("The map was saved successfully: {}", savedCardEntity.getId());
+        log.info("The card was saved successfully: {}", savedCardEntity.getId());
         return cardMapper.toDTO(savedCardEntity);
     }
 
@@ -92,11 +95,12 @@ public class CardServiceImpl implements CardService {
         log.info("Card with id {} successfully deleted", id);
         return true;
     }
+
     @Transactional
     @Override
     public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
         log.info("Attempt to update a card with an id {}", id);
-        if (! Validator.isValidId(id)) {
+        if (!Validator.isValidId(id)) {
             log.error("Attempt to find a card with an incorrect id: {}", id);
             throw new IllegalArgumentException("the card id cannot be null or < 0");
         }
@@ -106,9 +110,10 @@ public class CardServiceImpl implements CardService {
         log.info("The card with the id {} has been successfully updated", id);
         return cardMapper.toDTO(entity);
     }
+
     private CardEntity getEntityById(Long id) {
         log.info("Attempt to get a card with an id {}", id);
-        if (! Validator.isValidId(id)) {
+        if (!Validator.isValidId(id)) {
             log.error("Attempt to find a card with an incorrect id: {}", id);
             throw new IllegalArgumentException("the card id cannot be null or < 0");
         }
@@ -120,7 +125,7 @@ public class CardServiceImpl implements CardService {
 
     private CardEntity getEntityByUserId(Long id) {
         log.info("Attempt to get a card with user Id {}", id);
-        if (! Validator.isValidId(id)) {
+        if (!Validator.isValidId(id)) {
             log.error("Attempt to find a card with an invalid userId: {}", id);
             throw new IllegalArgumentException("the user Id of the card cannot be null or < 0");
         }
@@ -132,7 +137,7 @@ public class CardServiceImpl implements CardService {
 
     private CardEntity getEntityByAccountId(Long id) {
         log.info("Attempt to get a card with an AccountId {}", id);
-        if (! Validator.isValidId(id)) {
+        if (!Validator.isValidId(id)) {
             log.error("Attempt to find a card with an invalid AccountId: {}", id);
             throw new IllegalArgumentException("accountId card cannot be equal to null or < 0");
         }

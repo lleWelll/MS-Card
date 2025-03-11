@@ -1,8 +1,5 @@
 package org.example.mscard.dto;
 
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.validation.constraints.*;
 import lombok.*;
 
@@ -16,8 +13,7 @@ import java.time.LocalDate;
 @Builder
 public class CardDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    //In CardDto id can be null
     private Long id;
 
     @NotNull(message = "account id is required")
@@ -26,6 +22,7 @@ public class CardDTO {
     @NotNull(message = "user id is required")
     private Long userId;
 
+    @NotNull
     @Pattern(regexp = "\\d{16}", message = "Card number must be 16 digits")
     private String cardNumber;
 
@@ -34,7 +31,7 @@ public class CardDTO {
     private BigDecimal balance;
 
     @NotNull(message = "Expiry date is required")
-    private LocalDate expiryDate;
+    private String expiryDate;
 
     private Boolean active;
 

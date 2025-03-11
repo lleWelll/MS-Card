@@ -21,5 +21,3 @@ public interface CardService {
     CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction);
 }
 
-
-

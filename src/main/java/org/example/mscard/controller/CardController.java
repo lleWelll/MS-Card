@@ -54,6 +54,3 @@ public class CardController {
         return cardService.deleteCardById(id);
     }
 }
-
-
-

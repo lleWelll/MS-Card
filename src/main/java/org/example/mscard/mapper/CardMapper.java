@@ -5,6 +5,7 @@ import org.example.mscard.entity.CardEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Named;
+
 @Mapper(componentModel = "spring", uses = {CardTypeMapper.class, PaymentSystemMapper.class, DateMapper.class})
 public interface CardMapper {
     @Mapping(source = "cardNumber", target = "cardNumber", qualifiedByName = "mapCardNumber")

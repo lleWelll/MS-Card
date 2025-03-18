@@ -22,11 +22,11 @@ public class CardDTO {
     @NotNull(message = "user id is required")
     private Long userId;
 
-    @NotNull
+    @NotNull(message = "Card Number is required")
     @Pattern(regexp = "\\d{16}", message = "Card number must be 16 digits")
     private String cardNumber;
 
-    @NotNull
+    @NotNull(message = "Balance is required")
     @DecimalMin(value = "0.00", message = "Balance cannot be negative")
     private BigDecimal balance;
 

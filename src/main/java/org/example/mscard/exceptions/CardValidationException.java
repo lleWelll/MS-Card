@@ -1,6 +1,6 @@
 package org.example.mscard.exceptions;
 
-public class CardValidationException extends RuntimeException {
+public class CardValidationException extends CardException {
 	public CardValidationException() {
 	}
 

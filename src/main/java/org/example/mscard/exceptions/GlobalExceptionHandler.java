@@ -19,13 +19,6 @@ import java.util.List;
 @Slf4j
 public class GlobalExceptionHandler {
 
-	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler({InvalidPaymentSystemException.class, InvalidCardTypeException.class, CardValidationException.class, CardTransactionException.class, IllegalArgumentException.class})
-	public RestExceptionResponse handleBadRequestExceptions(Exception e, HttpServletRequest req) {
-		log.error(e.getMessage());
-		return new RestExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getClass().getSimpleName(), e.getMessage(), LocalDateTime.now(), req.getRequestURI());
-	}
-
 	@ResponseStatus(HttpStatus.NOT_FOUND)
 	@ExceptionHandler(CardNotFoundException.class)
 	public RestExceptionResponse handleCardNotFoundException(CardNotFoundException e, HttpServletRequest req) {
@@ -34,14 +27,21 @@ public class GlobalExceptionHandler {
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
+	@ExceptionHandler({CardException.class, IllegalArgumentException.class})
+	public RestExceptionResponse handleBadRequestExceptions(Exception e, HttpServletRequest req) {
+		log.error(e.getMessage());
+		return new RestExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getClass().getSimpleName(), e.getMessage(), LocalDateTime.now(), req.getRequestURI());
+	}
+
+	@ResponseStatus(HttpStatus.BAD_REQUEST)
 	@ExceptionHandler(MethodArgumentNotValidException.class)
 	public RestExceptionResponse handleMethodArgumentNotValidException(MethodArgumentNotValidException e, HttpServletRequest req) {
-		List<String> defaultMessage = getDefaultMessageFromMethodArgumentException(e.getBindingResult());
+		List<String> defaultMessage = getDefaultMessagesFromMethodArgumentException(e.getBindingResult());
 		log.error(defaultMessage.toString());
 		return new RestExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getClass().getSimpleName(), defaultMessage.toString(), LocalDateTime.now(), req.getRequestURI());
 	}
 
-	private List<String> getDefaultMessageFromMethodArgumentException(BindingResult bindingResult) {
+	private List<String> getDefaultMessagesFromMethodArgumentException(BindingResult bindingResult) {
 		List<String> fieldErrorDefaultMessages = new ArrayList<>();
 		for (FieldError fieldError : bindingResult.getFieldErrors()) {
 			fieldErrorDefaultMessages.add(fieldError.getDefaultMessage());

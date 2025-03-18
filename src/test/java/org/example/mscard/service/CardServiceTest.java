@@ -2,6 +2,7 @@ package org.example.mscard.service;
 
 import org.example.mscard.dto.CardDTO;
 import org.example.mscard.entity.CardEntity;
+import org.example.mscard.exceptions.CardValidationException;
 import org.example.mscard.exceptions.CardNotFoundException;
 import org.example.mscard.exceptions.InvalidCardTypeException;
 import org.example.mscard.exceptions.InvalidPaymentSystemException;
@@ -111,7 +112,7 @@ public class CardServiceTest {
 
     @Test
     void testGetCardById_invalidId() {
-        assertThrows(IllegalArgumentException.class, () -> cardService.getCardById(-1L));
+        assertThrows(CardValidationException.class, () -> cardService.getCardById(-1L));
     }
 
     @Test
@@ -141,7 +142,7 @@ public class CardServiceTest {
 
     @Test
     void testGetCardByUserId_invalidId() {
-        assertThrows(IllegalArgumentException.class, () -> cardService.getCardByUserId(-1L));
+        assertThrows(CardValidationException.class, () -> cardService.getCardByUserId(-1L));
     }
 
     @Test
@@ -171,7 +172,7 @@ public class CardServiceTest {
 
     @Test
     void testGetCardByAccountId_invalidId() {
-        assertThrows(IllegalArgumentException.class, () -> cardService.getCardByAccountId(-1L));
+        assertThrows(CardValidationException.class, () -> cardService.getCardByAccountId(-1L));
     }
 
     @Test
@@ -267,7 +268,7 @@ public class CardServiceTest {
 
     @Test
     void testDeleteCardById_invalidId() {
-        assertThrows(IllegalArgumentException.class, () -> cardService.deleteCardById(-1L));
+        assertThrows(CardValidationException.class, () -> cardService.deleteCardById(-1L));
     }
 
     @Test
@@ -297,7 +298,7 @@ public class CardServiceTest {
     void testUpdateCardById_invalidId() {
         Consumer<CardEntity> updateFunction = (entity) -> {
         };
-        assertThrows(IllegalArgumentException.class, () -> cardService.updateCardById(-1L, updateFunction));
+        assertThrows(CardValidationException.class, () -> cardService.updateCardById(-1L, updateFunction));
     }
 
     @Test

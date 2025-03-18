@@ -2,6 +2,7 @@ package org.example.mscard.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.example.mscard.exceptions.CardTransactionException;
 import org.example.mscard.service.CardService;
 import org.example.mscard.service.CardTransactionService;
 import org.springframework.stereotype.Service;
@@ -29,8 +30,7 @@ public class CardTransactionServiceImpl implements CardTransactionService {
 		cardService.updateCardById(id,
 				(entity) -> {
 					if (entity.getBalance().compareTo(amount) < 0) {
-						log.error("On card {} not enough money for payment. on card: {}, needed: {}", id, entity.getBalance(), amount);
-						throw new RuntimeException("Not enough money on card " + id);
+						throw new CardTransactionException("On card " + id + " not enough money for payment. on card: " + entity.getBalance() + ", needed: " + amount);
 					}
 					entity.setBalance(entity.getBalance().subtract(amount));
 				}

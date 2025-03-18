@@ -102,26 +102,10 @@ public class CardTransactionServiceImplTest {
         Exception ex = assertThrows(RuntimeException.class, () -> {
             cardTransactionService.processPayment(cardId, amountToPay);
         });
-        assertEquals("Not enough money on card " + cardId, ex.getMessage(),
+        assertEquals("On card 1 not enough money for payment. on card: 100.00, needed: 150.00", ex.getMessage(),
                 "Недостаточно средств");
     }
-//    почему не работает?
-//    Long cardId = 1L;
-//    BigDecimal amountToPay = new BigDecimal("150.00");
-//
-//    CardDTO cardDTO = new CardDTO();
-//    cardDTO.setBalance(new BigDecimal("100.00"));
-//
-//    when(cardService.getCardById(cardId)).thenReturn(cardDTO);
-//
-//    when(cardService.updateCardById(eq(cardId), any())).thenReturn(cardDTO);
-//
-//     Exception ex = Assertions.assertThrows(RuntimeException.class, () -> {
-//        cardTransactionService.processPayment(cardId, amountToPay);
-//    });
-//    assertEquals("Not enough money on card " + cardId, ex.getMessage(),
-//            "Недостаточно средств");
-//}
+
 @Test
 //оба баланса карт обновляются при успешном переводе средств между картами
 void processTransfer_WhenAmountIsTransferred_ShouldUpdateBothCards() {

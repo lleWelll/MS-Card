@@ -2,9 +2,9 @@ package org.example.mscard.service;
 
 import org.example.mscard.dto.CardDTO;
 import org.example.mscard.entity.CardEntity;
-import org.example.mscard.exceptions.CardValidationException;
+import org.example.mscard.exceptions.BaseValidationException;
 import org.example.mscard.exceptions.CardNotFoundException;
-import org.example.mscard.exceptions.InvalidCardTypeException;
+import org.example.mscard.exceptions.InvalidBaseTypeException;
 import org.example.mscard.exceptions.InvalidPaymentSystemException;
 import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
@@ -112,7 +112,7 @@ public class CardServiceTest {
 
     @Test
     void testGetCardById_invalidId() {
-        assertThrows(CardValidationException.class, () -> cardService.getCardById(-1L));
+        assertThrows(BaseValidationException.class, () -> cardService.getCardById(-1L));
     }
 
     @Test
@@ -142,7 +142,7 @@ public class CardServiceTest {
 
     @Test
     void testGetCardByUserId_invalidId() {
-        assertThrows(CardValidationException.class, () -> cardService.getCardByUserId(-1L));
+        assertThrows(BaseValidationException.class, () -> cardService.getCardByUserId(-1L));
     }
 
     @Test
@@ -172,7 +172,7 @@ public class CardServiceTest {
 
     @Test
     void testGetCardByAccountId_invalidId() {
-        assertThrows(CardValidationException.class, () -> cardService.getCardByAccountId(-1L));
+        assertThrows(BaseValidationException.class, () -> cardService.getCardByAccountId(-1L));
     }
 
     @Test
@@ -238,7 +238,7 @@ public class CardServiceTest {
         inputDTO.setCardType("invalid");
         inputDTO.setPaymentSystem("VISA");
 
-        assertThrows(InvalidCardTypeException.class, () -> cardService.saveCardById(inputDTO));
+        assertThrows(InvalidBaseTypeException.class, () -> cardService.saveCardById(inputDTO));
     }
 
     @Test
@@ -268,7 +268,7 @@ public class CardServiceTest {
 
     @Test
     void testDeleteCardById_invalidId() {
-        assertThrows(CardValidationException.class, () -> cardService.deleteCardById(-1L));
+        assertThrows(BaseValidationException.class, () -> cardService.deleteCardById(-1L));
     }
 
     @Test
@@ -298,7 +298,7 @@ public class CardServiceTest {
     void testUpdateCardById_invalidId() {
         Consumer<CardEntity> updateFunction = (entity) -> {
         };
-        assertThrows(CardValidationException.class, () -> cardService.updateCardById(-1L, updateFunction));
+        assertThrows(BaseValidationException.class, () -> cardService.updateCardById(-1L, updateFunction));
     }
 
     @Test

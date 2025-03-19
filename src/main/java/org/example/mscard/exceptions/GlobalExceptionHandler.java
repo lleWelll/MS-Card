@@ -27,8 +27,8 @@ public class GlobalExceptionHandler {
 	}
 
 	@ResponseStatus(HttpStatus.BAD_REQUEST)
-	@ExceptionHandler({CardException.class, IllegalArgumentException.class})
-	public RestExceptionResponse handleBadRequestExceptions(Exception e, HttpServletRequest req) {
+	@ExceptionHandler(BaseException.class)
+	public RestExceptionResponse handleBadRequestExceptions(BaseException e, HttpServletRequest req) {
 		log.error(e.getMessage());
 		return new RestExceptionResponse(HttpStatus.BAD_REQUEST.value(), e.getClass().getSimpleName(), e.getMessage(), LocalDateTime.now(), req.getRequestURI());
 	}

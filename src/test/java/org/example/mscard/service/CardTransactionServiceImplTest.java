@@ -102,7 +102,7 @@ public class CardTransactionServiceImplTest {
         Exception ex = assertThrows(RuntimeException.class, () -> {
             cardTransactionService.processPayment(cardId, amountToPay);
         });
-        assertEquals("On card 1 not enough money for payment. on card: 100.00, needed: 150.00", ex.getMessage(),
+        assertEquals("Insufficient funds on card 1 for payment. Available: 100.00, required: 150.00", ex.getMessage(),
                 "Недостаточно средств");
     }
 

@@ -4,10 +4,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.example.mscard.dto.CardDTO;
 import org.example.mscard.entity.CardEntity;
-import org.example.mscard.exceptions.CardValidationException;
-import org.example.mscard.exceptions.CardNotFoundException;
-import org.example.mscard.exceptions.InvalidCardTypeException;
-import org.example.mscard.exceptions.InvalidPaymentSystemException;
+import org.example.mscard.exceptions.*;
 import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
 import org.example.mscard.service.CardService;
@@ -74,11 +71,11 @@ public class CardServiceImpl implements CardService {
         cardDTO.setCardType(convertToUpperCaseCardType);
 
         if (!Validator.isValidId(cardDTO.getAccountId()) || !Validator.isValidId(cardDTO.getUserId())) {
-            throw new CardValidationException("Incorrect userId or accountId, it should be > 0");
+            throw new BaseValidationException("Incorrect userId or accountId, it should be > 0");
         }
 
         if (!Validator.isValidCardType(cardDTO.getCardType())) {
-            throw new InvalidCardTypeException("The card type is incorrect.");
+            throw new InvalidBaseTypeException("The card type is incorrect.");
         }
         if (!Validator.isValidPaymentSystem(cardDTO.getPaymentSystem())) {
             throw new InvalidPaymentSystemException("Incorrect payment system: " + cardDTO.getPaymentSystem());
@@ -113,24 +110,24 @@ public class CardServiceImpl implements CardService {
     private CardEntity getEntityById(Long id) {
         log.info("Attempt to get a card with an id {}", id);
         if (!Validator.isValidId(id)) {
-            throw new CardValidationException("the card id cannot be null or < 0");
+            throw new BaseValidationException(ErrorCode.INVALID_CARD_ID);
         }
-        return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException("A card with an id " + id + " not found"));
+        return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException(ErrorCode.CARD_NOT_FOUND_BY_ID, id));
     }
 
     private CardEntity getEntityByUserId(Long id) {
         log.info("Attempt to get a card with user Id {}", id);
         if (!Validator.isValidId(id)) {
-            throw new CardValidationException("the user Id of the card cannot be null or < 0");
+            throw new BaseValidationException(ErrorCode.INVALID_USER_ID);
         }
-        return cardRepository.findCardEntityByUserId(id).orElseThrow(() -> new CardNotFoundException("A card with a userId " + id + " not found"));
+        return cardRepository.findCardEntityByUserId(id).orElseThrow(() -> new CardNotFoundException(ErrorCode.CARD_NOT_FOUND_BY_USER_ID, id));
     }
 
     private CardEntity getEntityByAccountId(Long id) {
         log.info("Attempt to get a card with an AccountId {}", id);
         if (!Validator.isValidId(id)) {
-            throw new CardValidationException("accountId card cannot be equal to null or < 0");
+            throw new BaseValidationException(ErrorCode.INVALID_ACCOUNT_ID);
         }
-        return cardRepository.findCardEntityByAccountId(id).orElseThrow(() -> new CardNotFoundException("card with a accountId " + id + " not found"));
+        return cardRepository.findCardEntityByAccountId(id).orElseThrow(() -> new CardNotFoundException(ErrorCode.CARD_NOT_FOUND_BY_ACCOUNT_ID, id));
     }
 }

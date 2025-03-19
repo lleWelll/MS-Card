@@ -1,6 +1,7 @@
 package org.example.mscard.mapper;
 
 
+import org.example.mscard.exceptions.DateMapperException;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -32,19 +33,19 @@ public class DateMapperTest {
 
 	@ParameterizedTest
 	@ValueSource(strings = {"2026031001", "2026-31/01", "01/31-2026"})
-	public void toDate_WithInvalidFormats_ThrowsIllegalArgumentException(String date) {
-		Exception exception = Assertions.assertThrows(IllegalArgumentException.class,
+	public void toDate_WithInvalidFormats_ThrowsDateMapperException(String date) {
+		Exception exception = Assertions.assertThrows(DateMapperException.class,
 				() -> dateMapper.toDate(date)
 		);
-		Assertions.assertEquals("date format is not supported, please enter in this format: dd-MM-yyyy", exception.getMessage());
+		Assertions.assertEquals("Unsupported date format. Expected format: dd-MM-yyyy", exception.getMessage());
 	}
 
 	@Test
-	public void toDate_WithDateLengthMoreThanTen_TrowsIllegalArgumentException() {
+	public void toDate_WithDateLengthMoreThanTen_TrowsDateMapperException() {
 		String date = "2026 - 01 - 31";
-		Exception exception = Assertions.assertThrows(IllegalArgumentException.class,
+		Exception exception = Assertions.assertThrows(DateMapperException.class,
 				() -> dateMapper.toDate(date)
 				);
-		Assertions.assertEquals("expiryDate length should be = 10, " + date + ", enter expiryDate in format: dd-MM-yyyy", exception.getMessage());
+		Assertions.assertEquals("Invalid expiry date length. Expected 10 characters, but got: " + date + ". Format: dd-MM-yyyy", exception.getMessage());
 	}
 }

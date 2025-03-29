@@ -7,7 +7,7 @@ services:
       MYSQL_ROOT_PASSWORD: root  # Устанавливаем пароль для root
       MYSQL_DATABASE: cardsdb    # Создаем базу данных cardsdb
     ports:
-      - "3306:3306"
+      - "3307:3307"
     networks:
       - app-network
     volumes:

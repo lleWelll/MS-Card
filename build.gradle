@@ -37,6 +37,7 @@ dependencies {
     implementation 'org.hibernate.validator:hibernate-validator:8.0.1.Final'
     implementation 'org.glassfish:jakarta.el:4.0.2'
     implementation 'org.apache.commons:commons-lang3:3.17.0'
+    implementation 'org.springframework.kafka:spring-kafka'
 
 
     compileOnly 'org.projectlombok:lombok'

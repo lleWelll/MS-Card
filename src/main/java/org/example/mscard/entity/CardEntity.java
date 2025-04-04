@@ -2,34 +2,28 @@ package org.example.mscard.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import lombok.experimental.Accessors;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+
 
 @Entity
 @Table(name = "cards")
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 @Getter
 @Setter
-@Builder
-public class CardEntity {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@EqualsAndHashCode(callSuper = false)
+public class CardEntity extends BaseEntity{
 
-    @Embedded
-    private CardNumber cardNumber;
+    @Column(nullable = false, unique = true)
+    private Long accountId; //1-1
 
-    @Column(nullable = false)
-    private String cardHolderFirstName;
+    @Column(nullable = false, unique = true)
+    private Long userId; //1-1
 
     @Column(nullable = false)
-    private String cardHolderLastName;
+    private String cardNumber;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
@@ -39,12 +33,8 @@ public class CardEntity {
     @Column(nullable = false)
     private CardType cardType;
 
-    @Embedded
-    private Cvv cvv;
-
-    @Column(columnDefinition = "TINYINT(1)", nullable = false)
-    private boolean active;
-
+    @Column(columnDefinition = "TINYINT(1)")
+    private Boolean active;
 
     @Column(nullable = false)
     private LocalDate expiryDate;
@@ -52,15 +42,4 @@ public class CardEntity {
     @Column(precision = 19, scale = 2, nullable = false)
     private BigDecimal balance = BigDecimal.ZERO;
 
-    @CreationTimestamp
-    @Column(updatable = false)
-    private LocalDateTime created;
-
-    @UpdateTimestamp
-    @Column(nullable = false)
-    private LocalDateTime lastUpdated;
-
-    public String getCardHolderFullName() {
-        return cardHolderFirstName + " " + cardHolderLastName;
-    }
 }

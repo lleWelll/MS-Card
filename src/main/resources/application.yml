@@ -1,4 +1,21 @@
 spring:
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: my-group
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring:
+          json:
+            trusted:
+              packages: "org.example.mscard.dto" # Укажите пакет DTO
+    producer:
+      retries: 3
+      acks: all
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   application:
     name: db_cardsdb
   datasource:
@@ -6,6 +23,8 @@ spring:
     password: root
     username: root
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+
   jpa:
     hibernate:
       ddl-auto: validate
@@ -17,7 +36,5 @@ spring:
   liquibase:
     change-log: classpath:liquibase/changelog-master.yml
     enabled: true
-  jackson:
-    property-naming-strategy: SNAKE_CASE
 server:
   port: 4444

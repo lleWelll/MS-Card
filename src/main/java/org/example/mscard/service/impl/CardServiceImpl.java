@@ -1,17 +1,19 @@
 package org.example.mscard.service.impl;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.mscard.dto.CardDTO;
-import org.example.mscard.entity.*;
-import org.example.mscard.exceptions.CardNotFoundException;
+import org.example.mscard.entity.CardEntity;
+import org.example.mscard.exceptions.*;
 import org.example.mscard.mapper.CardMapper;
 import org.example.mscard.repository.CardRepository;
 import org.example.mscard.service.CardService;
+import org.example.mscard.util.Validator;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 @Service
 @RequiredArgsConstructor
@@ -22,82 +24,110 @@ public class CardServiceImpl implements CardService {
 
     @Transactional(readOnly = true)
     public List<CardDTO> getAllCards() {
-        return cardRepository.findAll()
+        log.info("Getting all the cards");
+        List<CardDTO> cards = cardRepository.findAll()
                 .stream()
                 .map(cardMapper::toDTO)
                 .toList();
+        log.info("Received {} cards", cards.size());
+        return cards;
     }
 
+    @Transactional(readOnly = true)
     @Override
-    public CardDTO getCardByNumber(String cardNumber) {
-        if (cardNumber == null || cardNumber.isBlank()) {
-            log.error("Attempted to find card with null or empty number");
-            throw new IllegalArgumentException("Card number cannot be null or empty");
-        }
-        return cardRepository.findByCardNumber_CardNumber(cardNumber)
-                .map(cardMapper::toDTO)
-                .orElseThrow(() -> {
-                    log.error("Card with number {} not found", cardNumber);
-                    return new CardNotFoundException("Card with number " + cardNumber + " not found");
-                });
+    public CardDTO getCardById(Long id) {
+        log.info("Getting a card with an id {}", id);
+        CardDTO cardDTO = cardMapper.toDTO(getEntityById(id));
+        log.info("Card with id {} successfully received", id);
+        return cardDTO;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CardDTO getCardByUserId(Long userId) {
+        log.info("Getting a card by userId {}", userId);
+        CardDTO cardDTO = cardMapper.toDTO(getEntityByUserId(userId));
+        log.info("The card with the userId {} was successfully received", userId);
+        return cardDTO;
+    }
+
+    @Transactional(readOnly = true)
+    @Override
+    public CardDTO getCardByAccountId(Long accountId) {
+        log.info("Getting a card by AccountId {}", accountId);
+        CardDTO cardDTO = cardMapper.toDTO(getEntityByAccountId(accountId));
+        log.info("The card with the AccountId {} was successfully received", accountId);
+        return cardDTO;
     }
 
     @Transactional
-    public CardDTO saveCard(CardDTO cardDTO) {
+    @Override
+    public CardDTO saveCardById(CardDTO cardDTO) {
 
-        CardNumber cardNumber = new CardNumber(cardDTO.getCardNumber());
-        Cvv cvv = new Cvv(cardDTO.getCvv());
+        String convertToUpperCasePaymentSystem = cardDTO.getPaymentSystem().toUpperCase();
+        String convertToUpperCaseCardType = cardDTO.getCardType().toUpperCase();
 
-        if (!cardNumber.isValid() || !cvv.isValid()) {
-            log.error("Invalid card details");
-            throw new IllegalArgumentException("Invalid card number or CVV");
+        cardDTO.setPaymentSystem(convertToUpperCasePaymentSystem);
+        cardDTO.setCardType(convertToUpperCaseCardType);
+
+        if (!Validator.isValidId(cardDTO.getAccountId()) || !Validator.isValidId(cardDTO.getUserId())) {
+            throw new BaseValidationException("Incorrect userId or accountId, it should be > 0");
         }
 
+        if (!Validator.isValidCardType(cardDTO.getCardType())) {
+            throw new InvalidBaseTypeException("The card type is incorrect.");
+        }
+        if (!Validator.isValidPaymentSystem(cardDTO.getPaymentSystem())) {
+            throw new InvalidPaymentSystemException("Incorrect payment system: " + cardDTO.getPaymentSystem());
+        }
         CardEntity cardEntity = cardMapper.toEntity(cardDTO);
-        cardEntity.setCardNumber(cardNumber);
-        cardEntity.setCvv(cvv);
-
-        CardEntity savedCard = cardRepository.save(cardEntity);
-        return cardMapper.toDTO(savedCard);
-    }
-
-    @Override
-    public boolean deleteCard(Long id) {
-        return cardRepository.findById(id)
-                .map(card -> {
-                    cardRepository.deleteById(id);
-                    return true;
-                })
-                .orElseThrow(() -> {
-                    log.error("Attempted to delete non-existent card with id {}", id);
-                    return new CardNotFoundException("Card not found with id " + id);
-                });
+        CardEntity savedCardEntity = cardRepository.save(cardEntity);
+        log.info("The card was saved successfully: {}", savedCardEntity.getId());
+        return cardMapper.toDTO(savedCardEntity);
     }
 
     @Transactional
     @Override
-    public CardDTO updateCard(Long id, CardDTO cardDTO) {
-        CardEntity cardEntity = cardRepository.findById(id)
-                .orElseThrow(() -> {
-                    log.error("Card with id {} not found", id);
-                    return new CardNotFoundException("Card with id " + id + " not found");
-                });
+    public boolean deleteCardById(Long id) {
+        log.info("Attempt to delete a card with an id {}", id);
+        CardEntity entity = getEntityById(id);
+        cardRepository.delete(entity);
+        log.info("Card with id {} successfully deleted", id);
+        return true;
+    }
 
-        if (cardDTO.getCardHolderFirstName() != null) {
-            cardEntity.setCardHolderFirstName(cardDTO.getCardHolderFirstName());
-        }
-        if (cardDTO.getCardHolderLastName() != null) {
-            cardEntity.setCardHolderLastName(cardDTO.getCardHolderLastName());
-        }
-        if (cardDTO.getBalance() != null) {
-            cardEntity.setBalance(cardDTO.getBalance());
-        }
-        if (cardDTO.getExpiryDate() != null) {
-            cardEntity.setExpiryDate(cardDTO.getExpiryDate());
-        }
+    @Transactional
+    @Override
+    public CardDTO updateCardById(Long id, Consumer<CardEntity> updateFunction) {
+        log.info("Attempt to update a card with an id {}", id);
+        CardEntity entity = getEntityById(id);
+        updateFunction.accept(entity);
+        cardRepository.save(entity);
+        log.info("The card with the id {} has been successfully updated", id);
+        return cardMapper.toDTO(entity);
+    }
 
+    private CardEntity getEntityById(Long id) {
+        log.info("Attempt to get a card with an id {}", id);
+        if (!Validator.isValidId(id)) {
+            throw new BaseValidationException(ErrorCode.INVALID_CARD_ID);
+        }
+        return cardRepository.findById(id).orElseThrow(() -> new CardNotFoundException(ErrorCode.CARD_NOT_FOUND_BY_ID, id));
+    }
 
-        CardEntity updatedCard = cardRepository.save(cardEntity);
-        return cardMapper.toDTO(updatedCard);
+    private CardEntity getEntityByUserId(Long id) {
+        log.info("Attempt to get a card with user Id {}", id);
+        if (!Validator.isValidId(id)) {
+            throw new BaseValidationException(ErrorCode.INVALID_USER_ID);
+        }
+        return cardRepository.findCardEntityByUserId(id).orElseThrow(() -> new CardNotFoundException(ErrorCode.CARD_NOT_FOUND_BY_USER_ID, id));
+    }
+
+    private CardEntity getEntityByAccountId(Long id) {
+        log.info("Attempt to get a card with an AccountId {}", id);
+        if (!Validator.isValidId(id)) {
+            throw new BaseValidationException(ErrorCode.INVALID_ACCOUNT_ID);
+        }
+        return cardRepository.findCardEntityByAccountId(id).orElseThrow(() -> new CardNotFoundException(ErrorCode.CARD_NOT_FOUND_BY_ACCOUNT_ID, id));
     }
 }

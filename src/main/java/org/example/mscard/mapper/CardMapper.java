@@ -4,18 +4,24 @@ import org.example.mscard.dto.CardDTO;
 import org.example.mscard.entity.CardEntity;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.Named;
 
-@Mapper(componentModel = "spring", uses = {CardNumberMapper.class, CvvMapper.class})
+@Mapper(componentModel = "spring", uses = {CardTypeMapper.class, PaymentSystemMapper.class, DateMapper.class})
 public interface CardMapper {
-
-    @Mapping(target = "id", ignore = true)
-    @Mapping(source = "cardNumber", target = "cardNumber.cardNumber")
-    @Mapping(source = "cvv", target = "cvv.cvvNumber")
-
+    @Mapping(source = "cardNumber", target = "cardNumber", qualifiedByName = "mapCardNumber")
     CardEntity toEntity(CardDTO cardDTO);
 
-    @Mapping(source = "cardNumber.cardNumber", target = "cardNumber")
-    @Mapping(source = "cvv.cvvNumber", target = "cvv")
-
     CardDTO toDTO(CardEntity cardEntity);
+    @Named("mapCardNumber")
+    static String mapCardNumber(String cardNumber) {
+        cardNumber = cardNumber.replaceAll("\\s", "");
+        cardNumber = cardNumber.replaceAll("-", "");
+        cardNumber = maskCardNumber(cardNumber);
+        return cardNumber;
+    }
+
+    static String maskCardNumber(String cardNumber) {
+        return "************" + cardNumber.substring(12);
+    }
+
 }

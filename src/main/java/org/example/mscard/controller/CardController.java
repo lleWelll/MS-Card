@@ -1,31 +1,56 @@
 package org.example.mscard.controller;
 
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.example.mscard.dto.CardDTO;
-import org.example.mscard.service.impl.CardServiceImpl;
+import org.example.mscard.service.CardService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/cards")
 public class CardController {
-    private final CardServiceImpl cardServiceImpl;
+    private final CardService cardService;
 
     @GetMapping
     public List<CardDTO> getAllCards() {
-        return cardServiceImpl.getAllCards();
+        return cardService.getAllCards();
     }
 
-    @GetMapping("/{cardNumber}")
-    public CardDTO getCardByNumber(@PathVariable String cardNumber) {
-        return cardServiceImpl.getCardByNumber(cardNumber);
+    @GetMapping("id/{id}")
+    public CardDTO getCardById(@PathVariable Long id) {
+        return cardService.getCardById(id);
+    }
+
+    @GetMapping("/user/{userId}")
+    public CardDTO getCardByUserId(@PathVariable Long userId) {
+        return cardService.getCardByUserId(userId);
+    }
+
+    @GetMapping("/account/{accountId}")
+    public CardDTO getCardByAccountId(@PathVariable Long accountId) {
+        return cardService.getCardByAccountId(accountId);
     }
 
     @PostMapping
-    public CardDTO createCard(@RequestBody CardDTO cardDTO) {
-        return cardServiceImpl.saveCard(cardDTO);
+    public CardDTO createCard(@RequestBody @Valid CardDTO cardDTO) {
+        log.info("Received request: {}", cardDTO);
+        return cardService.saveCardById(cardDTO);
     }
 
+    @PostMapping("/setActive")
+    public CardDTO setActive(@RequestParam Long id, @RequestParam Boolean active) {
+        return cardService.updateCardById(id,
+                (entity) -> entity.setActive(active)
+        );
+    }
+
+    @DeleteMapping("/{id}")
+    public boolean deleteById(@PathVariable Long id) {
+        return cardService.deleteCardById(id);
+    }
 }
